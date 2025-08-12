@@ -1,0 +1,90 @@
+//*******************************
+// Itemuselean
+//
+// Throw items at [0,0,0] vector
+//*******************************
+
+// Usage: bind <key> +itemuselean
+
+function itemuselean_init( )
+{
+  sp_sc_func_alias +itemuselean itemuselean
+  sp_sc_func_alias -itemuselean !
+
+  sp_sc_file_find ~f sofplus/data/itemuselean.cfg
+  sp_sc_flow_if number cvar ~f_0 == val 1
+  {
+    sp_sc_exec_file sofplus/data/itemuselean.cfg
+  }
+  else
+  {
+    set itemuselean_delay 7 // Not sure about this but just in case. Tie this from your _sp_cl_frame_delay & your max fps.
+    set itemuselean_type 0 // 0- jumping, 1- double lean
+  }
+
+  sp_sc_on_change itemuselean_delay itemuselean_init
+  set ~this "function itemuselean_init(*)%0A{%0Asp_sc_cvar_save itemuselean.cfg itemuselean_delay itemuselean_type%0A}"
+  sp_sc_cvar_unescape ~this ~this
+  sp_sc_func_load_cvar ~this
+}
+
+function itemuselean( * )
+{
+  sp_sc_flow_if number cvar itemuselean_type <= val 0
+  {
+    set ~t 200
+    add ~t #itemuselean_delay
+
+    +moveup
+    sp_sc_timer 100 +leanleft
+    sp_sc_timer 200 -leanleft
+    sp_sc_timer #~t itemuse
+    sp_sc_timer 300 -moveup
+  }
+  else
+  {
+    sp_sc_flow_if number cvar itemuselean_type <= val 1
+    {
+      set ~t 200
+      add ~t #itemuselean_delay
+
+      +moveup
+      sp_sc_timer 100 +leanleft
+      sp_sc_timer 200 -leanleft
+      sp_sc_timer #~t itemdrop
+      sp_sc_timer 300 -moveup
+    }
+    else
+    {
+      sp_sc_flow_if number cvar itemuselean_type <= val 2
+      {
+        set ~t 200
+        add ~t #itemuselean_delay
+
+        +moveup
+        sp_sc_timer 100 +leanleft
+        sp_sc_timer 200 -leanleft
+        sp_sc_timer #~t +altattack
+        sp_sc_timer 300 -altattack
+        sp_sc_timer 320 -moveup
+      }
+      else
+      {
+        set ~t 100
+        add ~t #itemuselean_delay
+
+        +leanleft
+        sp_sc_timer 100 -leanleft
+        sp_sc_timer #~t itemuse
+        sp_sc_timer 200 +leanleft
+        sp_sc_timer 300 -leanleft
+      }
+      
+    }
+    
+  }
+}
+
+function ( * )
+{
+}

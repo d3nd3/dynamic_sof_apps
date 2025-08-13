@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+VENV_DIR="$ROOT_DIR/app_venv"
+if [[ -f "$VENV_DIR/bin/activate" && "${VIRTUAL_ENV:-}" != "$VENV_DIR" ]]; then
+  # shellcheck disable=SC1090
+  source "$VENV_DIR/bin/activate"
+fi
+
+cd "$ROOT_DIR"
+
+PY="python"
+if ! command -v "$PY" >/dev/null 2>&1; then
+  if command -v python3 >/dev/null 2>&1; then
+    PY="python3"
+  else
+    echo "Error: Python not found. Create a venv at app_venv or install python3." >&2
+    exit 1
+  fi
+fi
+
+exec "$PY" -m apps.rfm_editor.main "$@"
+
+

@@ -3,16 +3,18 @@ import sys
 from pathlib import Path
 from typing import Optional
 
-from PySide6.QtCore import Qt, QSize, QSettings
+from PySide6.QtCore import Qt, QSize, QSettings, QTimer, QRect
 from PySide6.QtGui import QAction, QActionGroup, QKeySequence, QPainter, QColor, QBrush, QPalette, QFont, QFontMetrics
 from PySide6.QtWidgets import (
     QApplication,
     QFileDialog,
+    QPlainTextEdit,
     QInputDialog,
     QGraphicsScene,
     QGraphicsView,
     QFrame,
     QHBoxLayout,
+    QVBoxLayout,
     QMenu,
     QMainWindow,
     QMessageBox,
@@ -23,7 +25,14 @@ from PySide6.QtWidgets import (
     QAbstractItemView,
     QStyledItemDelegate,
     QStyleOptionViewItem,
+    QStyleOption,
     QStyle,
+    QProxyStyle,
+    QDialog,
+    QDialogButtonBox,
+    QLabel,
+    QCheckBox,
+    QComboBox,
     QTreeWidget,
     QTreeWidgetItem,
     QSizePolicy,
@@ -56,10 +65,95 @@ class _NoVScrollGraphicsView(QGraphicsView):
         super().wheelEvent(event)
 
 
+class _NoRowSelectionStyle(QProxyStyle):
+    def drawPrimitive(self, element, option, painter, widget=None):  # type: ignore[override]
+        try:
+            if element in (
+                QStyle.PrimitiveElement.PE_PanelItemViewRow,
+                QStyle.PrimitiveElement.PE_PanelItemViewItem,
+            ):
+                # Suppress native row selection/hover background
+                try:
+                    opt = QStyleOptionViewItem(option)
+                except Exception:
+                    opt = option
+                try:
+                    opt.state = opt.state & ~QStyle.StateFlag.State_Selected
+                    opt.state = opt.state & ~QStyle.StateFlag.State_MouseOver
+                    opt.state = opt.state & ~QStyle.StateFlag.State_HasFocus
+                except Exception:
+                    pass
+                return super().drawPrimitive(element, opt, painter, widget)
+        except Exception:
+            pass
+        return super().drawPrimitive(element, option, painter, widget)
+
+    def drawControl(self, element, option, painter, widget=None):  # type: ignore[override]
+        try:
+            if element == QStyle.ControlElement.CE_ItemViewItem:
+                try:
+                    opt = QStyleOptionViewItem(option)
+                except Exception:
+                    opt = option
+                try:
+                    opt.state = opt.state & ~QStyle.StateFlag.State_Selected
+                    opt.state = opt.state & ~QStyle.StateFlag.State_MouseOver
+                    opt.state = opt.state & ~QStyle.StateFlag.State_HasFocus
+                except Exception:
+                    pass
+                return super().drawControl(element, opt, painter, widget)
+        except Exception:
+            pass
+        return super().drawControl(element, option, painter, widget)
+
 class _OutlineTree(QTreeWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._dnd_line: Optional[QFrame] = None
+
+    def drawRow(self, painter, option, index):  # type: ignore[override]
+        try:
+            orig_is_selected = bool(option.state & QStyle.StateFlag.State_Selected)
+            # Use a copy of option with selection/hover/focus cleared for base painting
+            opt_clear = QStyleOptionViewItem(option)
+            try:
+                opt_clear.state = opt_clear.state & ~QStyle.StateFlag.State_Selected
+                opt_clear.state = opt_clear.state & ~QStyle.StateFlag.State_MouseOver
+                opt_clear.state = opt_clear.state & ~QStyle.StateFlag.State_HasFocus
+            except Exception:
+                pass
+
+            super().drawRow(painter, opt_clear, index)
+
+            # Compute full-row rect in viewport coords
+            row_rect = option.rect
+            try:
+                full_rect = row_rect.adjusted(-row_rect.x(), 0, self.viewport().width() - row_rect.width() - row_rect.x(), 0)
+            except Exception:
+                full_rect = row_rect
+
+            # Draw active-document blue overlay (doc-root rows only)
+            try:
+                payload = index.sibling(index.row(), 0).data(Qt.ItemDataRole.UserRole)
+                wnd = self.window()
+                active_doc_key = getattr(wnd, 'active_doc_key', None)
+                if isinstance(payload, tuple) and payload and payload[0] == 'doc-root' and len(payload) >= 2 and payload[1] == active_doc_key:
+                    painter.save()
+                    painter.setCompositionMode(QPainter.CompositionMode_Screen)
+                    painter.fillRect(full_rect, QBrush(QColor(66, 133, 244, 140)))
+                    painter.restore()
+            except Exception:
+                pass
+
+            # Draw selection overlay (yellow) on top if selected
+            if orig_is_selected:
+                painter.save()
+                painter.setCompositionMode(QPainter.CompositionMode_Screen)
+                painter.fillRect(full_rect, QBrush(QColor(255, 235, 59, 110)))
+                painter.restore()
+        except Exception:
+            # Fallback to default behavior
+            super().drawRow(painter, option, index)
 
     def _item_doc_key(self, item: QTreeWidgetItem) -> Optional[str]:
         # Ascend to the doc-root and read its key
@@ -461,6 +555,162 @@ class _LockedSplitter(QSplitter):
     def createHandle(self) -> QSplitterHandle:  # type: ignore[override]
         return _LockedSplitterHandle(self.orientation(), self)
 
+class MenuDirBrowserDialog(QDialog):
+    def __init__(self, parent, menu_root: Path):
+        super().__init__(parent)
+        self.setWindowTitle("Open from Menu Directory")
+        self.resize(680, 520)
+        self.menu_root = Path(menu_root)
+        self.entries: list[dict] = []
+
+        root_layout = QVBoxLayout(self)
+        header = QLabel(f"Menu directory: {self.menu_root}")
+        header.setWordWrap(True)
+        root_layout.addWidget(header)
+
+        # Controls row
+        from PySide6.QtWidgets import QHBoxLayout
+        controls = QHBoxLayout()
+        self.only_with_subframes = QCheckBox("Only files with sub-frames")
+        self.only_with_subframes.stateChanged.connect(self._rebuild_view)
+        controls.addWidget(self.only_with_subframes)
+
+        controls.addStretch(1)
+        controls.addWidget(QLabel("Sort by:"))
+        self.sort_combo = QComboBox()
+        self.sort_combo.addItems([
+            "Sub-frames: High → Low",
+            "Sub-frames: Low → High",
+            "Name: A → Z",
+        ])
+        self.sort_combo.currentIndexChanged.connect(self._rebuild_view)
+        controls.addWidget(self.sort_combo)
+        root_layout.addLayout(controls)
+
+        # Listing
+        self.listing = QTreeWidget(self)
+        self.listing.setHeaderLabels(["File", "Sub-frames", "Frames"])
+        header_widget: QHeaderView = self.listing.header()
+        try:
+            header_widget.setStretchLastSection(False)
+            header_widget.setSectionResizeMode(0, QHeaderView.ResizeToContents)
+            header_widget.setSectionResizeMode(1, QHeaderView.ResizeToContents)
+            header_widget.setSectionResizeMode(2, QHeaderView.ResizeToContents)
+        except Exception:
+            pass
+        try:
+            # Make file column stretch if available (fallback if Stretch unsupported above)
+            header_widget.setSectionResizeMode(0, QHeaderView.Stretch)
+        except Exception:
+            pass
+        self.listing.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
+        self.listing.itemSelectionChanged.connect(self._update_buttons)
+        self.listing.itemDoubleClicked.connect(lambda *_: self._accept_if_selection())
+        root_layout.addWidget(self.listing)
+
+        # Buttons
+        self.buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel, parent=self)
+        self.buttons.accepted.connect(self._accept_if_selection)
+        self.buttons.rejected.connect(self.reject)
+        root_layout.addWidget(self.buttons)
+        self._update_buttons()
+
+        # Scan and populate
+        self._scan_menu_dir()
+        self._rebuild_view()
+
+    def _scan_menu_dir(self) -> None:
+        """Build self.entries = [{rel, path, subframes, frames}]"""
+        self.entries.clear()
+        if not self.menu_root.exists():
+            return
+        candidates: list[Path] = []
+        try:
+            for p in self.menu_root.rglob("*.rmf"):
+                if p.is_file():
+                    candidates.append(p)
+        except Exception:
+            # Fallback non-recursive
+            for p in self.menu_root.glob("*.rmf"):
+                if p.is_file():
+                    candidates.append(p)
+
+        from .rfm_parser import parse_rfm_content
+        for path in candidates:
+            try:
+                rel = path.relative_to(self.menu_root)
+            except Exception:
+                rel = path.name
+            subframes = 0
+            frames_total = 0
+            try:
+                text = path.read_text(encoding="utf-8", errors="ignore")
+                doc = parse_rfm_content(text, file_path=str(path))
+                frames_total = len(doc.frames)
+                # Count frames that are declared as cut from another frame in the same document
+                names = set(doc.frames.keys())
+                subframes = sum(1 for f in doc.frames.values() if getattr(f, "cut_from", None) in names)
+            except Exception:
+                # Leave counts at 0; still list the file
+                pass
+            self.entries.append({
+                "rel": str(rel),
+                "path": str(path),
+                "subframes": int(subframes),
+                "frames": int(frames_total),
+            })
+
+    def _rebuild_view(self) -> None:
+        items = list(self.entries)
+        # Filter
+        if self.only_with_subframes.isChecked():
+            items = [e for e in items if e.get("subframes", 0) > 0]
+        # Sort
+        mode = self.sort_combo.currentIndex()
+        if mode == 0:  # High → Low
+            items.sort(key=lambda e: (e.get("subframes", 0), e.get("rel", "").lower()), reverse=True)
+        elif mode == 1:  # Low → High
+            items.sort(key=lambda e: (e.get("subframes", 0), e.get("rel", "").lower()))
+        else:  # Name A→Z
+            items.sort(key=lambda e: e.get("rel", "").lower())
+
+        # Populate tree
+        self.listing.clear()
+        for e in items:
+            it = QTreeWidgetItem([
+                e.get("rel", ""),
+                str(e.get("subframes", 0)),
+                str(e.get("frames", 0)),
+            ])
+            it.setData(0, Qt.ItemDataRole.UserRole, ("menu-entry", e.get("path", "")))
+            self.listing.addTopLevelItem(it)
+        # Select first by default
+        if self.listing.topLevelItemCount() > 0:
+            self.listing.setCurrentItem(self.listing.topLevelItem(0))
+        self._update_buttons()
+
+    def _update_buttons(self) -> None:
+        sel = self.listing.selectedItems()
+        has_sel = bool(sel)
+        ok_btn = self.buttons.button(QDialogButtonBox.Ok)
+        if ok_btn is not None:
+            ok_btn.setEnabled(has_sel)
+
+    def _accept_if_selection(self) -> None:
+        sel = self.listing.selectedItems()
+        if not sel:
+            return
+        self.accept()
+
+    def selected_path(self) -> Optional[str]:
+        sel = self.listing.selectedItems()
+        if not sel:
+            return None
+        payload = sel[0].data(0, Qt.ItemDataRole.UserRole)
+        if isinstance(payload, tuple) and payload and payload[0] == "menu-entry" and len(payload) >= 2:
+            return str(payload[1])
+        return None
+
 class _OutlineItemDelegate(QStyledItemDelegate):
     def paint(self, painter: QPainter, option: QStyleOptionViewItem, index) -> None:  # type: ignore[no-redef]
         # Extract payload for row-level decision
@@ -483,9 +733,15 @@ class _OutlineItemDelegate(QStyledItemDelegate):
         if index.column() == 0:
             # Draw base item without text
             saved_text = opt.text
-            opt.text = ""
-            style.drawControl(QStyle.ControlElement.CE_ItemViewItem, opt, painter, opt.widget)
-            opt.text = saved_text
+            opt_no_sel = QStyleOptionViewItem(opt)
+            try:
+                opt_no_sel.state = opt_no_sel.state & ~QStyle.StateFlag.State_Selected
+                opt_no_sel.state = opt_no_sel.state & ~QStyle.StateFlag.State_HasFocus
+                opt_no_sel.state = opt_no_sel.state & ~QStyle.StateFlag.State_MouseOver
+            except Exception:
+                pass
+            opt_no_sel.text = ""
+            style.drawControl(QStyle.ControlElement.CE_ItemViewItem, opt_no_sel, painter, opt.widget)
 
             text_rect = style.subElementRect(QStyle.SubElement.SE_ItemViewItemText, opt, opt.widget)
             full_text = opt.text
@@ -515,8 +771,15 @@ class _OutlineItemDelegate(QStyledItemDelegate):
                 painter.setFont(font_normal)
                 painter.drawText(text_rect, int(Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignLeft), full_text)
         else:
-            # Default paint for other columns
-            super().paint(painter, option, index)
+            # Default paint for other columns, but suppress the native selection background
+            opt_no_sel = QStyleOptionViewItem(opt)
+            try:
+                opt_no_sel.state = opt_no_sel.state & ~QStyle.StateFlag.State_Selected
+                opt_no_sel.state = opt_no_sel.state & ~QStyle.StateFlag.State_HasFocus
+                opt_no_sel.state = opt_no_sel.state & ~QStyle.StateFlag.State_MouseOver
+            except Exception:
+                pass
+            style.drawControl(QStyle.ControlElement.CE_ItemViewItem, opt_no_sel, painter, opt.widget)
 
         # Determine whether this row represents the active document (roots only)
         is_active_doc = False
@@ -563,10 +826,18 @@ class RfmEditorMainWindow(QMainWindow):
         self.active_frame_name: Optional[str] = None
         self.dirty: bool = False
         self.renderer = RfmRenderer()
-        # Persistent settings for menu directory
+        # Persistent settings for menu directory and resource directory
         self.settings = QSettings("dynamic_sof_apps", "rfm_editor")
         mrd = self.settings.value("menu_root_dir", "")
         self.menu_root: Optional[Path] = Path(mrd) if isinstance(mrd, str) and mrd else None
+        res = self.settings.value("resource_root_dir", "")
+        self.resource_root: Optional[Path] = Path(res) if isinstance(res, str) and res else None
+        # Keep renderer roots in sync
+        try:
+            self.renderer.menu_root = str(self.menu_root) if self.menu_root else None
+            self.renderer.resource_root = str(self.resource_root) if self.resource_root else None
+        except Exception:
+            pass
 
         # UI
         self._init_menu()
@@ -589,6 +860,11 @@ class RfmEditorMainWindow(QMainWindow):
         self.open_action = QAction("Open .rmf...", self)
         self.open_action.triggered.connect(self.on_open)
         file_menu.addAction(self.open_action)
+
+        # Open from configured Menu Directory with subframe-aware browser
+        self.open_from_menu_dir_action = QAction("Open from Menu Directory...", self)
+        self.open_from_menu_dir_action.triggered.connect(self.on_open_from_menu_dir)
+        file_menu.addAction(self.open_from_menu_dir_action)
 
         self.save_action = QAction("Save", self)
         self.save_action.triggered.connect(self.on_save)
@@ -655,6 +931,27 @@ class RfmEditorMainWindow(QMainWindow):
         set_dir.triggered.connect(self.on_set_menu_dir)
         settings_menu.addAction(set_dir)
 
+        set_res_dir = QAction("Set Resource Directory...", self)
+        set_res_dir.triggered.connect(self.on_set_resource_dir)
+        settings_menu.addAction(set_res_dir)
+
+        # Sub-frame rendering toggle
+        self.toggle_subframes_action = QAction("Render Sub-frames", self)
+        self.toggle_subframes_action.setCheckable(True)
+        try:
+            pref = self.settings.value("render_subframes", "false")
+            checked = str(pref).lower() in ("1", "true", "yes", "on")
+        except Exception:
+            checked = False
+        self.toggle_subframes_action.setChecked(checked)
+        # Keep renderer feature flag in sync
+        try:
+            self.renderer.subframe_rendering_enabled = bool(checked)
+        except Exception:
+            pass
+        self.toggle_subframes_action.triggered.connect(self.on_toggle_subframes)
+        settings_menu.addAction(self.toggle_subframes_action)
+
         # Screen Ratio submenu
         ratio_menu = settings_menu.addMenu("Screen Ratio")
         self.ratio_actions: dict[str, QAction] = {}
@@ -679,15 +976,23 @@ class RfmEditorMainWindow(QMainWindow):
 
         # Style menu bar and menus to distinguish from app background
         try:
-            self.menuBar().setStyleSheet(
+            mb = self.menuBar()
+            try:
+                mb.setContentsMargins(0, 0, 0, 0)
+            except Exception:
+                pass
+            mb.setStyleSheet(
                 """
                 QMenuBar {
                     background-color: #343A46; /* distinct from dark content */
                     color: #E6E6E6;
+                    margin: 0px;
+                    padding: 0px;
                 }
                 QMenuBar::item {
                     background: transparent;
-                    padding: 4px 10px;
+                    padding: 2px 8px;
+                    margin: 0px;
                 }
                 QMenuBar::item:selected {
                     background: #4A5668;
@@ -707,33 +1012,142 @@ class RfmEditorMainWindow(QMainWindow):
 
     def _init_central(self) -> None:
         container = QWidget(self)
-        layout = QHBoxLayout(container)
+        try:
+            container.setContentsMargins(0, 0, 0, 0)
+        except Exception:
+            pass
+        layout = QVBoxLayout(container)
         layout.setContentsMargins(0, 0, 0, 0)
+        try:
+            layout.setSpacing(0)
+        except Exception:
+            pass
 
         splitter = _LockedSplitter(Qt.Orientation.Horizontal, container)
+        self.splitter = splitter
+        try:
+            splitter.setChildrenCollapsible(False)
+        except Exception:
+            pass
+        try:
+            splitter.setContentsMargins(0, 0, 0, 0)
+        except Exception:
+            pass
+
+        # Top: selection summary bar below menu
+        try:
+            self.summary_bar = QLabel("", container)
+            self.summary_bar.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
+            self.summary_bar.setWordWrap(False)
+            try:
+                self.summary_bar.setTextFormat(Qt.TextFormat.RichText)
+            except Exception:
+                pass
+            try:
+                self.summary_bar.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
+            except Exception:
+                pass
+            try:
+                self.summary_bar.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+            except Exception:
+                pass
+            # Professional, subtle styling
+            self.summary_bar.setStyleSheet(
+                """
+                QLabel {
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                                stop:0 #2C323C, stop:1 #242A33);
+                    color: #E6E6E6;
+                    padding: 0px 8px;
+                    margin: 0px;
+                    border-bottom: 1px solid #3A404A;
+                    font-family: 'Segoe UI', 'Inter', 'Ubuntu', sans-serif;
+                    font-size: 12px;
+                    letter-spacing: 0.3px;
+                }
+                """
+            )
+            try:
+                self.summary_bar.setContentsMargins(0, 0, 0, 0)
+                self.summary_bar.setMargin(0)
+            except Exception:
+                pass
+            try:
+                self._rightsize_summary_bar()
+            except Exception:
+                pass
+        except Exception:
+            self.summary_bar = QLabel("", container)
+        # Stack summary bar and splitter vertically with zero spacing
+        layout.addWidget(self.summary_bar)
         layout.addWidget(splitter)
 
         # Left: Hierarchy / outline tree
         self.outline = _OutlineTree(splitter)
-        self.outline.setHeaderLabels(["Element", "Summary"]) 
-        # Make Element column auto-size to fit content, Summary stretches
+        # Two columns: primary label + info/count
+        self.outline.setHeaderLabels(["Element", "Info"]) 
         header: QHeaderView = self.outline.header()
-        header.setStretchLastSection(False)
-        header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(1, QHeaderView.Stretch)
+        try:
+            header.setStretchLastSection(False)
+        except Exception:
+            pass
+        try:
+            header.setSectionResizeMode(0, QHeaderView.Stretch)
+        except Exception:
+            header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
+        try:
+            header.setSectionResizeMode(1, QHeaderView.ResizeToContents)
+        except Exception:
+            pass
         self.outline.itemSelectionChanged.connect(self.on_outline_selection)
         self.outline.itemExpanded.connect(lambda *_: None)
-        self.outline.itemCollapsed.connect(lambda *_: None)
+        self.outline.itemCollapsed.connect(self._on_outline_item_collapsed)
+        try:
+            self.outline.setExpandsOnDoubleClick(False)
+        except Exception:
+            pass
         self.outline.setMinimumWidth(64)
         # Strong visual selection in yellow across the full row
         self.outline.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         # Ensure the selection is visible even when the widget loses focus; we draw our own overlay.
         # Also keep foreground text color unchanged for readability.
+        # Enforce transparent selection via CSS; custom overlay handles selection visuals
         self.outline.setStyleSheet(
             "QTreeWidget::item:selected:active{background: transparent; color: palette(text);} "
             "QTreeWidget::item:selected:!active{background: transparent; color: palette(text);} "
-            "QTreeWidget::item{color: palette(text);}"
+            "QTreeWidget::item:selected{background: transparent; color: palette(text);} "
+            "QTreeWidget::item:hover{background: transparent;} "
+            "QTreeWidget::branch{background: transparent;} "
+            "QTreeWidget::branch:selected{background: transparent;} "
+            "QTreeWidget::branch:hover{background: transparent;} "
+            "QTreeWidget{outline: none;} "
+            "QTreeWidget::item{color: palette(text); selection-background-color: transparent; selection-color: palette(text);} "
+            "QTreeView::item:selected{background: transparent; color: palette(text);} "
+            "QTreeView::item:hover{background: transparent;} "
+            "QTreeView{selection-background-color: transparent;} "
+            "QAbstractItemView::item:selected{background: transparent; color: palette(text);} "
+            "QAbstractItemView::item:hover{background: transparent;}"
         )
+        try:
+            self.outline.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        except Exception:
+            pass
+        # Force selection highlight to be fully transparent at the palette level too (all states)
+        try:
+            pal = self.outline.palette()
+            transparent = QBrush(QColor(0, 0, 0, 0))
+            for grp in (QPalette.ColorGroup.Active, QPalette.ColorGroup.Inactive, QPalette.ColorGroup.Disabled):
+                pal.setBrush(grp, QPalette.ColorRole.Highlight, transparent)
+                # Keep highlighted text readable by using normal text color
+                pal.setBrush(grp, QPalette.ColorRole.HighlightedText, pal.brush(QPalette.ColorRole.Text))
+            self.outline.setPalette(pal)
+            vpal = self.outline.viewport().palette()
+            for grp in (QPalette.ColorGroup.Active, QPalette.ColorGroup.Inactive, QPalette.ColorGroup.Disabled):
+                vpal.setBrush(grp, QPalette.ColorRole.Highlight, transparent)
+                vpal.setBrush(grp, QPalette.ColorRole.HighlightedText, vpal.brush(QPalette.ColorRole.Text))
+            self.outline.viewport().setPalette(vpal)
+        except Exception:
+            pass
         self.outline.setItemDelegate(_OutlineItemDelegate(self.outline))
         # Enable context menu for delete
         self.outline.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
@@ -746,15 +1160,25 @@ class RfmEditorMainWindow(QMainWindow):
         self.outline.setAcceptDrops(True)
         self.outline.setDropIndicatorShown(True)
 
-        # Center: Graphics view
+        # Center: Graphics view, bottom-anchored in its pane
         self.scene = QGraphicsScene(self)
-        self.view = _NoVScrollGraphicsView(self.scene, splitter)
+        center_wrap = QWidget(splitter)
+        try:
+            center_wrap.setContentsMargins(0, 0, 0, 0)
+        except Exception:
+            pass
+        from PySide6.QtWidgets import QVBoxLayout as _QVBoxLayout
+        center_v = _QVBoxLayout(center_wrap)
+        center_v.setContentsMargins(0, 0, 0, 0)
+        center_v.setSpacing(0)
+        center_v.addStretch(1)
+        self.view = _NoVScrollGraphicsView(self.scene, center_wrap)
         self.view.setRenderHints(self.view.renderHints())
         # Never show scrollbars; we scale to height and fix width accordingly
         try:
             self.view.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
             self.view.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-            # Center horizontally when there is extra space; keep top-aligned vertically
+            # Center horizontally when there is extra space; keep top-aligned vertically inside the view
             self.view.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
             # Remove widget frame to avoid 1px visual borders
             self.view.setFrameShape(QFrame.NoFrame)
@@ -765,17 +1189,33 @@ class RfmEditorMainWindow(QMainWindow):
             self.view.setMaximumSize(QSize(640, 480))
         except Exception:
             pass
+        try:
+            center_v.addWidget(self.view, 0, Qt.AlignmentFlag.AlignHCenter)
+            center_v.addStretch(1)
+        except Exception:
+            center_v.addWidget(self.view)
         self.selection_overlay = None  # QGraphicsRectItem
+        self.selection_label_item = None  # QGraphicsSimpleTextItem
 
-        # Right: Placeholder for property editor (future expansion)
+        # Right: Property editor and raw source view
         self.props = QTreeWidget(splitter)
         self.props.setHeaderLabels(["Property", "Value"]) 
         self.props.setMinimumWidth(64)
         self.props.itemChanged.connect(self.on_prop_item_changed)
 
+        self.raw_view = QPlainTextEdit(splitter)
+        self.raw_view.setReadOnly(True)
+        self.raw_view.hide()
+
         splitter.setStretchFactor(0, 0)
         splitter.setStretchFactor(1, 1)
         splitter.setStretchFactor(2, 0)
+        # If raw_view exists, set a reasonable width and keep hidden unless toggled
+        try:
+            self.raw_view.setMinimumWidth(300)
+            splitter.setStretchFactor(3, 0)
+        except Exception:
+            pass
 
         self.setCentralWidget(container)
         # Apply fixed-size profile to match current screen ratio
@@ -783,10 +1223,354 @@ class RfmEditorMainWindow(QMainWindow):
             self._apply_fixed_view_profile()
         except Exception:
             pass
+        # Set an initial splitter layout so panels are visible pre-show
+        try:
+            center_w = getattr(self.renderer, 'max_screen_width', 640) or 640
+            left_w = max(220, self.outline.minimumWidth())
+            right_w = max(260, self.props.minimumWidth())
+            self.splitter.setSizes([int(left_w), int(center_w), int(right_w), 0])
+        except Exception:
+            pass
+        # Provide a resolver for page documents to the renderer
+        try:
+            def _resolve_page(page_name: str, base_key: Optional[str]) -> Optional[RfmDocument]:
+                # Try existing open documents first
+                # Resolve fully qualified key for consistent lookup
+                cand_path = self._resolve_page_candidate_from_base(page_name, base_key)
+                try:
+                    key = str(cand_path.resolve())
+                except Exception:
+                    key = str(cand_path)
+                doc = self.documents_by_key.get(key)
+                if doc is not None:
+                    return doc
+                # If not open, attempt to read and parse on-the-fly
+                try:
+                    text = cand_path.read_text(encoding='utf-8')
+                    return parse_rfm_content(text, file_path=str(cand_path))
+                except Exception:
+                    return None
+
+            self.renderer.page_resolver = _resolve_page
+        except Exception:
+            pass
+
+    def showEvent(self, event):  # type: ignore[override]
+        try:
+            super().showEvent(event)
+        except Exception:
+            pass
+        # After the window is shown, finalize splitter sizes and trigger an initial render
+        try:
+            QTimer.singleShot(0, self._post_show_init)
+        except Exception:
+            pass
+
+    def _post_show_init(self) -> None:
+        try:
+            # Ensure fixed profile is applied and the editor view is centered
+            self._apply_fixed_view_profile()
+        except Exception:
+            pass
+        try:
+            # Recompute sizes now that actual widths are known
+            self._center_editor_view()
+        except Exception:
+            pass
+        # If a document is loaded, render; else set scene rect to screen profile for a proper blank view
+        try:
+            if getattr(self, 'document', None):
+                self.refresh_scene()
+            else:
+                from PySide6.QtCore import QRectF as _QRectF
+                self.view.resetTransform()
+                self.scene.setSceneRect(_QRectF(0, 0, float(getattr(self.renderer, 'max_screen_width', 640) or 640), float(getattr(self.renderer, 'max_screen_height', 480) or 480)))
+        except Exception:
+            pass
+        try:
+            self._update_summary_bar(None)
+        except Exception:
+            pass
+        try:
+            self._rightsize_summary_bar()
+        except Exception:
+            pass
+        # Finally, compact the window to fit content to avoid large top/bottom gaps on startup
+        try:
+            self._resize_to_compact()
+        except Exception:
+            pass
 
     def _init_statusbar(self) -> None:
         sb = QStatusBar(self)
         self.setStatusBar(sb)
+
+    def _update_summary_bar(self, payload: object | None) -> None:
+        try:
+            if not hasattr(self, 'summary_bar') or self.summary_bar is None:
+                return
+            # Build: menu:ENTRY.rmf    frame:document.rmf/frame.rmf     element:all_properties_string
+            menu_part = ""
+            frame_part = ""
+            elem_part = ""
+
+            # menu: entry document filename (main doc if available, else active)
+            try:
+                entry_key = getattr(self, 'main_doc_key', None) or getattr(self, 'active_doc_key', None)
+                if entry_key:
+                    menu_part = f"menu:{Path(str(entry_key)).name}"
+            except Exception:
+                pass
+
+            # frame: document.rmf/frame.rmf (page file if frame has page; else frame name)
+            try:
+                if getattr(self, 'active_doc_key', None):
+                    doc_base = Path(str(self.active_doc_key)).name
+                else:
+                    doc_base = ""
+                second = ""
+                if getattr(self, 'active_frame_name', None) and self.active_doc_key:
+                    doc = self.documents_by_key.get(self.active_doc_key)
+                    f = doc.frames.get(self.active_frame_name) if doc else None
+                    if f and getattr(f, 'page', None):
+                        cand = self._resolve_page_candidate_from_base(f.page, self.active_doc_key)
+                        second = Path(str(cand)).name
+                    elif self.active_frame_name:
+                        second = str(self.active_frame_name)
+                if doc_base:
+                    if second:
+                        frame_part = f"frame:{doc_base}/{second}"
+                    else:
+                        frame_part = f"frame:{doc_base}"
+            except Exception:
+                pass
+
+            # element: selected element raw inner or frame tag inner
+            try:
+                if isinstance(payload, tuple):
+                    tag = payload[0]
+                    if tag == 'element':
+                        _, doc_key, seg_idx = payload
+                        doc = self.documents_by_key.get(doc_key)
+                        if doc:
+                            from .rfm_model import RfmElement
+                            elem = next((e for e in doc.elements if e.segment_index == seg_idx), None)
+                            raw = getattr(elem, 'raw_tag', '') if isinstance(elem, RfmElement) else ''
+                            elem_part = raw[1:-1] if isinstance(raw, str) and raw.startswith('<') and raw.endswith('>') else raw
+                    elif tag == 'frame':
+                        _, doc_key, frame_name = payload
+                        doc = self.documents_by_key.get(doc_key)
+                        if doc:
+                            f = doc.frames.get(frame_name)
+                            if f:
+                                full = f.to_tag_str()
+                                elem_part = full[1:-1] if full.startswith('<') and full.endswith('>') else full
+                elif hasattr(payload, 'raw_tag'):
+                    raw = getattr(payload, 'raw_tag')
+                    if isinstance(raw, str):
+                        elem_part = raw[1:-1] if raw.startswith('<') and raw.endswith('>') else raw
+            except Exception:
+                pass
+
+            # Assemble with rich styling
+            def span(label: str, value: str) -> str:
+                if not value:
+                    return ""
+                return (
+                    f"<span style=\"color:#9FB0C8;\">{label}</span>"
+                    f"<span style=\"color:#E6E6E6;\">{value}</span>"
+                )
+            parts: list[str] = []
+            if menu_part:
+                parts.append(span("menu:", menu_part.split(':',1)[1]))
+            if frame_part:
+                # frame:document/frame -> label 'frame:' then value
+                parts.append(span("frame:", frame_part.split(':',1)[1]))
+            if elem_part:
+                parts.append(span("element:", elem_part))
+            sep = "<span style=\"color:#556070; padding:0 10px;\">|</span>"
+            html = sep.join(parts)
+            if html:
+                html = f"<div style=\"margin:0; padding:0; line-height:1;\">{html}</div>"
+            self.summary_bar.setText(html)
+            self.summary_bar.setToolTip(menu_part + "    " + frame_part + ("    element:" + elem_part if elem_part else ""))
+            try:
+                self._rightsize_summary_bar()
+            except Exception:
+                pass
+        except Exception:
+            pass
+
+    def _rightsize_summary_bar(self) -> None:
+        try:
+            if not hasattr(self, 'summary_bar') or self.summary_bar is None:
+                return
+            # Compute ideal height from current font metrics + small padding
+            fm = self.summary_bar.fontMetrics()
+            # Tight single-line height without extra leading
+            text_h = max(1, fm.ascent() + fm.descent())
+            ideal = text_h
+            self.summary_bar.setFixedHeight(ideal)
+        except Exception:
+            pass
+
+    def _resize_to_compact(self) -> None:
+        # Size the main window to tightly fit the menu bar, summary bar, center view and status bar
+        try:
+            mb_h = 0
+            try:
+                mb_h = int(self.menuBar().sizeHint().height())
+            except Exception:
+                mb_h = 0
+            sb_h = 0
+            try:
+                sb = self.statusBar()
+                if sb is not None:
+                    sb_h = int(sb.sizeHint().height())
+            except Exception:
+                sb_h = 0
+            bar_h = 0
+            try:
+                bar_h = int(max(self.summary_bar.height(), self.summary_bar.sizeHint().height()))
+            except Exception:
+                bar_h = 0
+            center_h = int(getattr(self.renderer, 'max_screen_height', 480) or 480)
+
+            left_w = 0
+            right_w = 0
+            center_w = int(getattr(self.renderer, 'max_screen_width', 640) or 640)
+            try:
+                left_w = int(max(220, self.outline.minimumWidth()))
+            except Exception:
+                left_w = 220
+            try:
+                right_w = int(max(260, self.props.minimumWidth()))
+            except Exception:
+                right_w = 260
+            handle_w = 0
+            try:
+                handle_w = int(self.splitter.handleWidth()) * 2
+            except Exception:
+                handle_w = 0
+
+            desired_w = int(left_w + center_w + right_w + handle_w)
+            desired_h = int(mb_h + bar_h + center_h + sb_h)
+            # Apply a small guard against extremely small sizes
+            desired_w = max(desired_w, 640)
+            desired_h = max(desired_h, 400)
+            self.resize(desired_w, desired_h)
+        except Exception:
+            pass
+
+        # View menu: toggle raw source panel
+        view_menu = self.menuBar().addMenu("View")
+        self.toggle_raw_action = QAction("Raw .rmf Mode", self)
+        self.toggle_raw_action.setCheckable(True)
+        self.toggle_raw_action.triggered.connect(self.on_toggle_raw_view)
+        view_menu.addAction(self.toggle_raw_action)
+
+        # Move "Replace <include> in Raw" to Settings menu
+        try:
+            settings_menu = None
+            for a in self.menuBar().actions():
+                if a.menu() and a.menu().title() == "Settings":
+                    settings_menu = a.menu()
+                    break
+            if settings_menu is None:
+                settings_menu = self.menuBar().addMenu("Settings")
+        except Exception:
+            settings_menu = self.menuBar().addMenu("Settings")
+
+        self.toggle_raw_expand_includes_action = QAction("Replace <include> in Raw", self)
+        self.toggle_raw_expand_includes_action.setCheckable(True)
+        # Load persisted preference (default: True)
+        try:
+            pref = self.settings.value("raw_replace_includes", "true")
+            checked = str(pref).lower() in ("1", "true", "yes", "on")
+        except Exception:
+            checked = True
+        self.toggle_raw_expand_includes_action.setChecked(checked)
+        self.toggle_raw_expand_includes_action.triggered.connect(self.on_toggle_raw_expand_includes)
+        settings_menu.addAction(self.toggle_raw_expand_includes_action)
+
+        # Keep renderer flag synced when toggled in View as well (if duplicated later)
+
+    def on_toggle_raw_view(self, checked: bool) -> None:
+        try:
+            if checked:
+                # Hide outline, graphics view, props; show raw only
+                self._update_raw_view()
+                self.outline.hide()
+                self.view.hide()
+                self.props.hide()
+                self.raw_view.show()
+            else:
+                # Show editor panes; hide raw
+                self.raw_view.hide()
+                self.outline.show()
+                self.view.show()
+                self.props.show()
+        except Exception:
+            pass
+
+    def _update_raw_view(self) -> None:
+        if not self.document:
+            self.raw_view.setPlainText("")
+            return
+        try:
+            # If Replace <include> is on, show serialized (expanded) content; else, show file as-is if available
+            replace_includes = True
+            try:
+                if hasattr(self, 'toggle_raw_expand_includes_action'):
+                    replace_includes = bool(self.toggle_raw_expand_includes_action.isChecked())
+            except Exception:
+                replace_includes = True
+            if replace_includes:
+                text = serialize_rfm(self.document)
+            else:
+                fp = getattr(self.document, 'file_path', None)
+                if fp:
+                    try:
+                        text = Path(fp).read_text(encoding="utf-8", errors="ignore")
+                    except Exception:
+                        text = serialize_rfm(self.document)
+                else:
+                    text = serialize_rfm(self.document)
+        except Exception:
+            text = ""
+        self.raw_view.setPlainText(text)
+
+    def on_toggle_raw_expand_includes(self, checked: bool) -> None:
+        try:
+            self.settings.setValue("raw_replace_includes", "true" if checked else "false")
+            self.settings.sync()
+        except Exception:
+            pass
+        # If raw view is visible, refresh it to reflect the new setting
+        try:
+            if hasattr(self, 'raw_view') and not self.raw_view.isHidden():
+                self._update_raw_view()
+        except Exception:
+            pass
+
+    def on_toggle_subframes(self, checked: bool) -> None:
+        # Persist preference and update renderer; refresh scene
+        try:
+            self.settings.setValue("render_subframes", "true" if checked else "false")
+            self.settings.sync()
+        except Exception:
+            pass
+        try:
+            self.renderer.subframe_rendering_enabled = bool(checked)
+        except Exception:
+            pass
+        try:
+            self.refresh_scene()
+            self.statusBar().showMessage(
+                "Sub-frame rendering {}".format("enabled" if checked else "disabled"), 4000
+            )
+        except Exception:
+            pass
 
     def on_set_screen_ratio(self, label: str, initializing: bool = False) -> None:
         # Map ratio label to max Y
@@ -844,6 +1628,28 @@ class RfmEditorMainWindow(QMainWindow):
         # Reset workspace so this open starts from a clean slate
         self._reset_workspace()
         self.load_file(Path(path_str))
+
+    def on_open_from_menu_dir(self) -> None:
+        # Ensure menu directory is configured
+        if not self.menu_root or not Path(self.menu_root).exists():
+            self.on_set_menu_dir()
+        if not self.menu_root or not Path(self.menu_root).exists():
+            return
+        # Show browser dialog
+        try:
+            dlg = MenuDirBrowserDialog(self, Path(self.menu_root))
+        except Exception as e:  # noqa: BLE001
+            QMessageBox.critical(self, "Error", f"Unable to open browser:\n{e}")
+            return
+        if dlg.exec() != QDialog.DialogCode.Accepted:  # type: ignore[attr-defined]
+            return
+        chosen = dlg.selected_path()
+        if not chosen:
+            return
+        if not self._maybe_save_changes():
+            return
+        self._reset_workspace()
+        self.load_file(Path(chosen))
 
     def load_file(self, path: Path) -> None:
         try:
@@ -1055,29 +1861,84 @@ class RfmEditorMainWindow(QMainWindow):
             except Exception:
                 pass
             root.addChild(frames)
+            # Build parent-child map for frames
+            frames_by_name = {f.name: f for f in doc.frames.values()}
+            children_by_parent: dict[str, list] = {}
+            for f in doc.frames.values():
+                p = getattr(f, 'cut_from', None)
+                if p and p in frames_by_name:
+                    children_by_parent.setdefault(p, []).append(f)
+            # Create items for each frame once
+            frame_item_by_name: dict[str, QTreeWidgetItem] = {}
             for frame in doc.frames.values():
-                item = QTreeWidgetItem([f"frame {frame.name}", f"{frame.width}x{frame.height}"])
-                item.setData(0, Qt.ItemDataRole.UserRole, ("frame", key, frame.name))
+                it = QTreeWidgetItem([f"frame {frame.name}", f"{frame.width}x{frame.height}"])
+                it.setData(0, Qt.ItemDataRole.UserRole, ("frame", key, frame.name))
                 try:
-                    flags = item.flags()
-                    flags |= Qt.ItemFlag.ItemIsDragEnabled
-                    flags &= ~Qt.ItemFlag.ItemIsDropEnabled
-                    # Reordering above/below is handled by view; child not a drop target as a child
-                    item.setFlags(flags)
+                    fflags = it.flags()
+                    fflags |= Qt.ItemFlag.ItemIsDragEnabled
+                    fflags &= ~Qt.ItemFlag.ItemIsDropEnabled
+                    it.setFlags(fflags)
                 except Exception:
                     pass
-                frames.addChild(item)
-                if getattr(frame, "page", None):
-                    page_node = QTreeWidgetItem([f"page {frame.page}", ""]) 
-                    page_node.setData(0, Qt.ItemDataRole.UserRole, ("doc-page", key, frame.page, frame.name))
+                frame_item_by_name[frame.name] = it
+            # Attach children recursively under their parents
+            def attach_children(parent_name: str, parent_item: QTreeWidgetItem) -> None:
+                for ch in children_by_parent.get(parent_name, []) or []:
+                    child_item = frame_item_by_name.get(ch.name)
+                    if child_item is None:
+                        continue
+                    parent_item.addChild(child_item)
+                    # Prevent collapsing of frame items; also disable expand/collapse on double click
                     try:
-                        flags = page_node.flags()
-                        flags &= ~Qt.ItemFlag.ItemIsDragEnabled
-                        flags &= ~Qt.ItemFlag.ItemIsDropEnabled
-                        page_node.setFlags(flags)
+                        cflags = child_item.flags()
+                        # No direct flag to disable expand; enforce via marker and signals
+                        child_item.setFlags(cflags)
+                        child_item.setExpanded(True)
+                        child_item.setData(0, Qt.ItemDataRole.UserRole + 1, "force-expanded")
                     except Exception:
                         pass
-                    item.addChild(page_node)
+                    if getattr(ch, 'page', None):
+                        page_node = QTreeWidgetItem([f"page {ch.page}", ""]) 
+                        page_node.setData(0, Qt.ItemDataRole.UserRole, ("doc-page", key, ch.page, ch.name))
+                        try:
+                            pflags = page_node.flags()
+                            pflags &= ~Qt.ItemFlag.ItemIsDragEnabled
+                            pflags &= ~Qt.ItemFlag.ItemIsDropEnabled
+                            page_node.setFlags(pflags)
+                            child_item.setExpanded(True)
+                            child_item.setData(0, Qt.ItemDataRole.UserRole + 1, "force-expanded")
+                        except Exception:
+                            pass
+                        child_item.addChild(page_node)
+                    attach_children(ch.name, child_item)
+            # Top-level frames (no valid cut_from) attach directly under Frames
+            for f in doc.frames.values():
+                if not getattr(f, 'cut_from', None) or getattr(f, 'cut_from') not in frames_by_name:
+                    top_item = frame_item_by_name.get(f.name)
+                    if top_item is None:
+                        continue
+                    frames.addChild(top_item)
+                    try:
+                        tflags = top_item.flags()
+                        top_item.setFlags(tflags)
+                        top_item.setExpanded(True)
+                        top_item.setData(0, Qt.ItemDataRole.UserRole + 1, "force-expanded")
+                    except Exception:
+                        pass
+                    if getattr(f, 'page', None):
+                        page_node = QTreeWidgetItem([f"page {f.page}", ""]) 
+                        page_node.setData(0, Qt.ItemDataRole.UserRole, ("doc-page", key, f.page, f.name))
+                        try:
+                            pflags = page_node.flags()
+                            pflags &= ~Qt.ItemFlag.ItemIsDragEnabled
+                            pflags &= ~Qt.ItemFlag.ItemIsDropEnabled
+                            page_node.setFlags(pflags)
+                            top_item.setExpanded(True)
+                            top_item.setData(0, Qt.ItemDataRole.UserRole + 1, "force-expanded")
+                        except Exception:
+                            pass
+                        top_item.addChild(page_node)
+                    attach_children(f.name, top_item)
 
             # Backdrop
             if doc.backdrop_segment_index is not None:
@@ -1105,8 +1966,7 @@ class RfmEditorMainWindow(QMainWindow):
             root.addChild(elems_parent)
             for elem in doc.elements:
                 label = f"<{elem.name}>"
-                summary = elem.summary()
-                item = QTreeWidgetItem([label, summary])
+                item = QTreeWidgetItem([label])
                 item.setData(0, Qt.ItemDataRole.UserRole, ("element", key, elem.segment_index))
                 try:
                     flags = item.flags()
@@ -1124,8 +1984,12 @@ class RfmEditorMainWindow(QMainWindow):
             elems_parent.setExpanded(True)
         # Auto-resize Element column to fit content and ensure tree min-width keeps it readable
         try:
+            # Ensure tree min-width accounts for both columns plus some padding
             self.outline.resizeColumnToContents(0)
-            minw = self.outline.sizeHintForColumn(0) + 60
+            self.outline.resizeColumnToContents(1)
+            col0 = max(0, self.outline.sizeHintForColumn(0))
+            col1 = max(0, self.outline.sizeHintForColumn(1))
+            minw = col0 + col1 + 60
             if minw > self.outline.minimumWidth():
                 self.outline.setMinimumWidth(minw)
         except Exception:
@@ -1139,12 +2003,23 @@ class RfmEditorMainWindow(QMainWindow):
         self.scene.clear()
         if not self.document:
             return
+        # Ensure renderer knows the currently selected frame for labeling
+        try:
+            self.renderer.active_frame_name = self.active_frame_name
+        except Exception:
+            pass
         self.renderer.render_document(self.document, self.scene)
         # Fixed-size view: ensure 1:1 pixels and apply fixed profile
         try:
             self.view.resetTransform()
             self.scene.setSceneRect(getattr(self.renderer, 'content_rect', self.scene.itemsBoundingRect()))
             self._apply_fixed_view_profile()
+        except Exception:
+            pass
+        # Keep raw view synchronized if visible
+        try:
+            if hasattr(self, 'raw_view') and self.raw_view.isVisible():
+                self._update_raw_view()
         except Exception:
             pass
 
@@ -1159,10 +2034,59 @@ class RfmEditorMainWindow(QMainWindow):
         except Exception:
             pass
         # Do not impose a window minimum width here; only the view is fixed-size.
+        # Re-center splitter columns around the fixed-width view
+        try:
+            self._center_editor_view()
+        except Exception:
+            pass
 
     def resizeEvent(self, event):  # type: ignore[override]
         try:
             super().resizeEvent(event)
+        except Exception:
+            pass
+        # Maintain centered view and allocate remainder to side panels
+        try:
+            if hasattr(self, 'raw_view') and self.raw_view.isVisible():
+                # Raw mode: occupy full width
+                if hasattr(self, 'splitter'):
+                    total = max(0, self.splitter.width())
+                    self.splitter.setSizes([0, 0, 0, total])
+            else:
+                self._center_editor_view()
+        except Exception:
+            pass
+
+    def _center_editor_view(self) -> None:
+        # Ensure the fixed-size center view is visually centered; distribute remaining width to side panels
+        if not hasattr(self, 'splitter'):
+            return
+        try:
+            total = max(0, self.splitter.width())
+            center_w = self.view.width()
+            left_min = max(0, self.outline.minimumWidth())
+            # Respect a maximum width for the right panel to avoid shifting the center when selecting items
+            right_min = max(0, min(self.props.maximumWidth(), self.props.minimumWidth()))
+            remainder = max(0, total - center_w)
+            # Aim for equal split but respect min widths
+            left = remainder // 2
+            right = remainder - left
+            if left < left_min:
+                left = left_min
+                right = max(0, remainder - left)
+            if right < right_min:
+                right = right_min
+                left = max(0, remainder - right)
+            # Final clamp: don't exceed total
+            if left + center_w + right > total:
+                # Reduce side panels proportionally
+                overflow = left + center_w + right - total
+                take_l = min(left, overflow // 2)
+                take_r = min(right, overflow - take_l)
+                left -= take_l
+                right -= take_r
+            # Since the center pane contains a bottom-anchored wrapper, we still size its column to the view width
+            self.splitter.setSizes([int(left), int(center_w), int(right), 0])
         except Exception:
             pass
         # No scaling on resize; keep fixed-size view
@@ -1187,6 +2111,13 @@ class RfmEditorMainWindow(QMainWindow):
             payload = item.data(0, Qt.ItemDataRole.UserRole)
             if payload is not None and str(payload) in keys:
                 item.setExpanded(True)
+            # Enforce expansion for frames that have a page child
+            try:
+                marker = item.data(0, Qt.ItemDataRole.UserRole + 1)
+                if marker == "force-expanded":
+                    item.setExpanded(True)
+            except Exception:
+                pass
             for i in range(item.childCount()):
                 visit(item.child(i))
         for i in range(self.outline.topLevelItemCount()):
@@ -1196,11 +2127,24 @@ class RfmEditorMainWindow(QMainWindow):
         items = self.outline.selectedItems()
         if not items:
             self._clear_selection_overlay()
+            try:
+                self._update_summary_bar(None)
+            except Exception:
+                pass
             return
         payload = items[0].data(0, Qt.ItemDataRole.UserRole)
         # Multi-document aware selection
         if isinstance(payload, tuple):
             tag = payload[0]
+            # Prevent collapsing frames that have page nodes by re-expanding selection if needed
+            try:
+                if tag == "frame":
+                    # If marked force-expanded, keep it open
+                    marker = items[0].data(0, Qt.ItemDataRole.UserRole + 1)
+                    if marker == "force-expanded":
+                        items[0].setExpanded(True)
+            except Exception:
+                pass
             if tag == "doc-root":
                 _, doc_key = payload
                 self._set_active_document(doc_key)
@@ -1209,11 +2153,33 @@ class RfmEditorMainWindow(QMainWindow):
                 # Clear frame highlight when selecting a document root
                 self.active_frame_doc_key = None
                 self.active_frame_name = None
+                # Refresh to hide any frame label
+                try:
+                    self.renderer.active_frame_name = None
+                    self.refresh_scene()
+                except Exception:
+                    pass
+                try:
+                    self._update_summary_bar(("doc-root", doc_key))
+                except Exception:
+                    pass
                 return
             if tag == "doc-category":
                 # Switch active document when selecting category nodes like Frames/Elements
                 _, doc_key, _cat = payload
                 self._set_active_document(doc_key)
+                # Clear frame selection label when navigating categories
+                self.active_frame_doc_key = None
+                self.active_frame_name = None
+                try:
+                    self.renderer.active_frame_name = None
+                    self.refresh_scene()
+                except Exception:
+                    pass
+                try:
+                    self._update_summary_bar(("doc-category", doc_key, _cat))
+                except Exception:
+                    pass
                 return
             if tag == "doc-page":
                 if len(payload) >= 4:
@@ -1222,14 +2188,37 @@ class RfmEditorMainWindow(QMainWindow):
                     _, base_key, page_name = payload
                     frame_name = None
                 self._open_or_switch_page(page_name, base_key=base_key, frame_name=frame_name)
+                # After switching to the page, scroll the tree to the new active doc root
+                try:
+                    active = getattr(self, 'active_doc_key', None)
+                    if isinstance(active, str):
+                        self._select_doc_root_item(active)
+                except Exception:
+                    pass
+                try:
+                    self._update_summary_bar(payload)
+                except Exception:
+                    pass
                 return
             if tag == "doc-backdrop":
                 _, doc_key = payload
                 if not (self.document and self.document.file_path == doc_key):
                     self._set_active_document(doc_key)
+                # Hide any frame label when selecting backdrop
+                self.active_frame_doc_key = None
+                self.active_frame_name = None
+                try:
+                    self.renderer.active_frame_name = None
+                    self.refresh_scene()
+                except Exception:
+                    pass
                 self.populate_props(("backdrop", None))
                 self._highlight_payload(("backdrop", None))
                 self._select_backdrop_item(doc_key)
+                try:
+                    self._update_summary_bar(payload)
+                except Exception:
+                    pass
                 return
             if tag == "frame":
                 _, doc_key, frame_name = payload
@@ -1238,16 +2227,34 @@ class RfmEditorMainWindow(QMainWindow):
                 # Persist last selected frame for blue highlight in outline
                 self.active_frame_doc_key = doc_key
                 self.active_frame_name = frame_name
+                # Re-render so the WYSIWYG view shows only this frame's label
+                try:
+                    self.renderer.active_frame_name = self.active_frame_name
+                    self.refresh_scene()
+                except Exception:
+                    pass
                 frame = self.documents_by_key[doc_key].frames.get(frame_name)
                 if frame:
                     self.populate_props(frame)
                     self._highlight_payload(frame)
                     self._select_frame_item(doc_key, frame_name)
+                try:
+                    self._update_summary_bar(payload)
+                except Exception:
+                    pass
                 return
             if tag == "element":
                 _, doc_key, seg_index = payload
                 if not (self.document and self.document.file_path == doc_key):
                     self._set_active_document(doc_key)
+                # Deselect any frame label when selecting an element
+                self.active_frame_doc_key = None
+                self.active_frame_name = None
+                try:
+                    self.renderer.active_frame_name = None
+                    self.refresh_scene()
+                except Exception:
+                    pass
                 # Find element by segment index
                 doc = self.documents_by_key[doc_key]
                 elem = next((e for e in doc.elements if e.segment_index == seg_index), None)
@@ -1255,6 +2262,10 @@ class RfmEditorMainWindow(QMainWindow):
                     self.populate_props(elem)
                     self._highlight_payload(elem)
                     self._select_element_item(doc_key, seg_index)
+                try:
+                    self._update_summary_bar(payload)
+                except Exception:
+                    pass
                 return
         # Fallback single-doc behavior
         self.populate_props(payload)
@@ -1269,6 +2280,17 @@ class RfmEditorMainWindow(QMainWindow):
         except Exception:
             pass
  
+    def _on_outline_item_collapsed(self, item: QTreeWidgetItem) -> None:
+        # Prevent collapse for frames that contain a page node; immediately re-expand
+        try:
+            marker = item.data(0, Qt.ItemDataRole.UserRole + 1)
+            if marker == "force-expanded":
+                try:
+                    QTimer.singleShot(0, lambda it=item: it.setExpanded(True))
+                except Exception:
+                    item.setExpanded(True)
+        except Exception:
+            pass
 
     def _open_or_switch_page(self, page_name: str, base_key: Optional[str] = None, frame_name: Optional[str] = None) -> None:
         # Resolve via helper considering configured menu dir
@@ -1338,7 +2360,16 @@ class RfmEditorMainWindow(QMainWindow):
             self.refresh_outline()
         finally:
             self.outline.blockSignals(False)
+        # Ensure the active document is selected and scrolled into view in the outline
+        try:
+            self._select_doc_root_item(key)
+        except Exception:
+            pass
         self.refresh_scene()
+        try:
+            self._update_summary_bar(("doc-root", key))
+        except Exception:
+            pass
 
     def _select_doc_root_item(self, key: str) -> None:
         try:
@@ -1350,6 +2381,11 @@ class RfmEditorMainWindow(QMainWindow):
                     if isinstance(payload, tuple) and len(payload) >= 2 and payload[0] == "doc-root" and payload[1] == key:
                         self.outline.setCurrentItem(item)
                         item.setSelected(True)
+                        try:
+                            # Center the selected document in view
+                            self.outline.scrollToItem(item, QAbstractItemView.PositionAtCenter)
+                        except Exception:
+                            pass
                         break
             finally:
                 self.outline.blockSignals(False)
@@ -1525,6 +2561,15 @@ class RfmEditorMainWindow(QMainWindow):
             from .rfm_model import RfmFrame, RfmElement
 
             if isinstance(payload, RfmFrame):
+                # Pseudo property: all (full raw tag for frame)
+                try:
+                    full = payload.to_tag_str()
+                    all_item = QTreeWidgetItem(["all", full[1:-1] if full.startswith('<') and full.endswith('>') else full])
+                    all_item.setFlags(all_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+                    all_item.setToolTip(1, full)
+                    self.props.addTopLevelItem(all_item)
+                except Exception:
+                    pass
                 name_item = QTreeWidgetItem(["name", payload.name])
                 name_item.setFlags(name_item.flags() | Qt.ItemFlag.ItemIsEditable)
                 name_item.setData(0, Qt.ItemDataRole.UserRole, ("frame", "name", payload.name))
@@ -1549,6 +2594,148 @@ class RfmEditorMainWindow(QMainWindow):
                 type_item = QTreeWidgetItem(["tag", payload.name])
                 type_item.setFlags(type_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
                 self.props.addTopLevelItem(type_item)
+                # Pseudo property: all (full raw tag contents between < and >)
+                try:
+                    raw_tag = getattr(payload, 'raw_tag', '')
+                    raw_inner = ''
+                    if isinstance(raw_tag, str) and raw_tag.startswith('<') and raw_tag.endswith('>'):
+                        raw_inner = raw_tag[1:-1]
+                    all_item = QTreeWidgetItem(["all", raw_inner])
+                    all_item.setFlags(all_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+                    # Show full string on hover
+                    all_item.setToolTip(1, raw_inner)
+                    self.props.addTopLevelItem(all_item)
+                except Exception:
+                    pass
+                # Editable properties based on element type
+                if payload.name == "text":
+                    text_val = payload.text_content or ""
+                    txt_item = QTreeWidgetItem(["text", text_val])
+                    txt_item.setFlags(txt_item.flags() | Qt.ItemFlag.ItemIsEditable)
+                    txt_item.setData(0, Qt.ItemDataRole.UserRole, ("element", "text", payload.segment_index))
+                    self.props.addTopLevelItem(txt_item)
+                if payload.name == "image":
+                    img_val = payload.image_path or ""
+                    img_item = QTreeWidgetItem(["image", img_val])
+                    img_item.setFlags(img_item.flags() | Qt.ItemFlag.ItemIsEditable)
+                    img_item.setData(0, Qt.ItemDataRole.UserRole, ("element", "image", payload.segment_index))
+                    self.props.addTopLevelItem(img_item)
+                    # Image attributes
+                    def _add_ro(label: str, value: str | None) -> None:
+                        if not value:
+                            return
+                        it = QTreeWidgetItem([label, value])
+                        it.setFlags(it.flags() & ~Qt.ItemFlag.ItemIsEditable)
+                        self.props.addTopLevelItem(it)
+                    _add_ro("tint", getattr(payload, 'tint', None))
+                    _add_ro("atint", getattr(payload, 'atint', None))
+                    _add_ro("btint", getattr(payload, 'btint', None))
+                    _add_ro("ctint", getattr(payload, 'ctint', None))
+                    _add_ro("dtint", getattr(payload, 'dtint', None))
+                    _add_ro("bolt", getattr(payload, 'bolt', None))
+                    _add_ro("bbolt", getattr(payload, 'bbolt', None))
+                    if getattr(payload, 'key_name', None) or getattr(payload, 'key_command', None):
+                        _add_ro("key", f"{payload.key_name or ''}")
+                        _add_ro("command", f"{payload.key_command or ''}")
+                    if getattr(payload, 'ckey_var', None):
+                        _add_ro("ckey", f"{payload.ckey_var or ''}")
+                        if getattr(payload, 'ckey_false_command', None):
+                            _add_ro("false", f"{payload.ckey_false_command}")
+                        if getattr(payload, 'ckey_true_command', None):
+                            _add_ro("true", f"{payload.ckey_true_command}")
+                    if getattr(payload, 'ikey_action', None):
+                        _add_ro("ikey", f"{payload.ikey_action}")
+                        if getattr(payload, 'ikey_command', None):
+                            _add_ro("command", f"{payload.ikey_command}")
+                    _add_ro("tip", getattr(payload, 'tip_text', None))
+                    if any(getattr(payload, f, False) for f in ("noshade", "noscale", "noborder")):
+                        flags = []
+                        if getattr(payload, 'noshade', False):
+                            flags.append('noshade')
+                        if getattr(payload, 'noscale', False):
+                            flags.append('noscale')
+                        if getattr(payload, 'noborder', False):
+                            flags.append('noborder')
+                        _add_ro("flags", ", ".join(flags))
+                    if any(getattr(payload, f, None) is not None for f in ("area_border_width","area_border_line_width","area_border_line_color")):
+                        _add_ro("border", f"{payload.area_border_width or 0} {payload.area_border_line_width or 0} {payload.area_border_line_color or ''}")
+                    if getattr(payload, 'width_px', None) is not None:
+                        _add_ro("width", str(payload.width_px))
+                    if getattr(payload, 'height_px', None) is not None:
+                        _add_ro("height", str(payload.height_px))
+                    if getattr(payload, 'next_cmd', None):
+                        _add_ro("next", payload.next_cmd)
+                    if getattr(payload, 'prev_cmd', None):
+                        _add_ro("prev", payload.prev_cmd)
+                    if getattr(payload, 'cvar', None):
+                        _add_ro("cvar", payload.cvar)
+                    if getattr(payload, 'cvari', None):
+                        _add_ro("cvari", payload.cvari)
+                    if getattr(payload, 'inc', None):
+                        _add_ro("inc", payload.inc)
+                    if getattr(payload, 'mod', None):
+                        _add_ro("mod", payload.mod)
+                    if getattr(payload, 'xoff', None) is not None:
+                        _add_ro("xoff", str(payload.xoff))
+                    if getattr(payload, 'yoff', None) is not None:
+                        _add_ro("yoff", str(payload.yoff))
+                    if getattr(payload, 'tab', False):
+                        _add_ro("tab", "true")
+                    if getattr(payload, 'align', None):
+                        _add_ro("align", payload.align)
+                    # Also show resolved path (read-only) for debugging/path clarity
+                    try:
+                        resolved = getattr(self.renderer, "_resolve_image_path")(img_val) if img_val else None
+                    except Exception:
+                        resolved = None
+                    if resolved:
+                        full = resolved
+                        disp = (full if len(full) <= 64 else (full[:30] + "…" + full[-30:]))
+                        res_item = QTreeWidgetItem(["resolved", disp])
+                        # Show full path in tooltip for hover
+                        res_item.setToolTip(1, full)
+                        res_item.setFlags(res_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+                        self.props.addTopLevelItem(res_item)
+                if payload.name in {"bghoul", "ghoul"}:
+                    # Show model and common area attributes
+                    def _add_ro2(label: str, value: str | None) -> None:
+                        if not value:
+                            return
+                        it = QTreeWidgetItem([label, value])
+                        it.setFlags(it.flags() & ~Qt.ItemFlag.ItemIsEditable)
+                        self.props.addTopLevelItem(it)
+                    _add_ro2("model", getattr(payload, 'model_name', None))
+                    if getattr(payload, 'scale_val', None) is not None:
+                        _add_ro2("scale", str(payload.scale_val))
+                    if getattr(payload, 'time_val', None) is not None:
+                        _add_ro2("time", str(payload.time_val))
+                    # Common area attributes
+                    for lab in ("tint","atint","btint","ctint","dtint","bolt","bbolt","cvar","cvari","inc","mod","align"):
+                        _add_ro2(lab, getattr(payload, lab, None))
+                    if getattr(payload, 'key_name', None) or getattr(payload, 'key_command', None):
+                        _add_ro2("key", f"{payload.key_name or ''}")
+                        _add_ro2("command", f"{payload.key_command or ''}")
+                    if getattr(payload, 'ckey_var', None):
+                        _add_ro2("ckey", payload.ckey_var)
+                    if getattr(payload, 'ikey_action', None):
+                        _add_ro2("ikey", payload.ikey_action)
+                    _add_ro2("tip", getattr(payload, 'tip_text', None))
+                    flags = []
+                    if getattr(payload, 'noshade', False): flags.append('noshade')
+                    if getattr(payload, 'noscale', False): flags.append('noscale')
+                    if getattr(payload, 'noborder', False): flags.append('noborder')
+                    if flags:
+                        _add_ro2("flags", ", ".join(flags))
+                    if any(getattr(payload, f, None) is not None for f in ("area_border_width","area_border_line_width","area_border_line_color")):
+                        _add_ro2("border", f"{payload.area_border_width or 0} {payload.area_border_line_width or 0} {payload.area_border_line_color or ''}")
+                    if getattr(payload, 'width_px', None) is not None:
+                        _add_ro2("width", str(payload.width_px))
+                    if getattr(payload, 'height_px', None) is not None:
+                        _add_ro2("height", str(payload.height_px))
+                    if getattr(payload, 'xoff', None) is not None:
+                        _add_ro2("xoff", str(payload.xoff))
+                    if getattr(payload, 'yoff', None) is not None:
+                        _add_ro2("yoff", str(payload.yoff))
             elif isinstance(payload, tuple) and payload[0] == "backdrop":
                 # Backdrop properties
                 mode_val = self.document.backdrop_mode or ""
@@ -1569,13 +2756,21 @@ class RfmEditorMainWindow(QMainWindow):
                 self.props.addTopLevelItem(mode_item)
                 self.props.addTopLevelItem(img_item)
                 self.props.addTopLevelItem(col_item)
-            # After populating, widen the props view to fit content
+            # After populating, keep props panel width stable; enable horizontal scroll
             try:
-                self._autosize_props_panel()
+                self.props.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+                # Cap width to a reasonable value and avoid expanding the splitter
+                maxw = max(260, self.props.minimumWidth())
+                self.props.setMaximumWidth(maxw)
+                # Do not auto-grow props on long values; rely on scrolling and tooltips instead
             except Exception:
                 pass
         finally:
             self.props.blockSignals(False)
+        try:
+            self._update_summary_bar(payload)
+        except Exception:
+            pass
 
     def _update_text_tag(self, raw_tag: str, new_text: str) -> str:
         # Replace first argument of <text ...> with quoted new_text
@@ -1635,7 +2830,64 @@ class RfmEditorMainWindow(QMainWindow):
                 except ValueError:
                     return
             elif key == "tail":
+                # Update raw tail and re-parse to refresh border/backfill/page fields
                 frame.raw_tail = new_val
+                # Reset structured fields
+                frame.border_width = None
+                frame.border_line_width = None
+                frame.border_line_color = None
+                frame.backfill_color = None
+                frame.page = None
+                frame.cut_from = None
+                frame.cursor = None
+                frame.tail_extra = ""
+                # Simple whitespace tokenization (matches initial parse behavior)
+                tail_tokens = (new_val or "").split()
+                j = 0
+                consumed = [False] * len(tail_tokens)
+                while j < len(tail_tokens):
+                    tok = tail_tokens[j].lower()
+                    if tok == "border" and j + 3 < len(tail_tokens):
+                        try:
+                            frame.border_width = int(tail_tokens[j + 1])
+                            frame.border_line_width = int(tail_tokens[j + 2])
+                            frame.border_line_color = tail_tokens[j + 3]
+                            consumed[j] = consumed[j + 1] = consumed[j + 2] = consumed[j + 3] = True
+                            j += 4
+                            continue
+                        except ValueError:
+                            pass
+                    if tok == "backfill" and j + 1 < len(tail_tokens):
+                        frame.backfill_color = tail_tokens[j + 1]
+                        consumed[j] = consumed[j + 1] = True
+                        j += 2
+                        continue
+                    if tok == "cut" and j + 1 < len(tail_tokens):
+                        frame.cut_from = tail_tokens[j + 1]
+                        consumed[j] = consumed[j + 1] = True
+                        j += 2
+                        continue
+                    if tok == "cursor" and j + 1 < len(tail_tokens):
+                        try:
+                            frame.cursor = int(tail_tokens[j + 1])
+                            consumed[j] = consumed[j + 1] = True
+                            j += 2
+                            continue
+                        except ValueError:
+                            pass
+                    if tok == "page" and j + 1 < len(tail_tokens):
+                        frame.page = tail_tokens[j + 1].strip('"')
+                        consumed[j] = consumed[j + 1] = True
+                        j += 2
+                        continue
+                    if tok == "cpage" and j + 1 < len(tail_tokens):
+                        frame.cpage_cvar = tail_tokens[j + 1].strip('"')
+                        consumed[j] = consumed[j + 1] = True
+                        j += 2
+                        continue
+                    j += 1
+                extras = [t for t, c in zip(tail_tokens, consumed) if not c]
+                frame.tail_extra = " ".join(extras)
             self.dirty = True
             self.refresh_outline()
             self.refresh_scene()
@@ -1666,9 +2918,6 @@ class RfmEditorMainWindow(QMainWindow):
             self.refresh_outline()
             self.refresh_scene()
             # Reselect the same element by index if possible
-            class _Dummy: pass
-            _d = _Dummy()
-            setattr(_d, 'segment_index', seg_idx)
             from .rfm_model import RfmElement
             self._highlight_payload(RfmElement(name="", raw_tag="", segment_index=seg_idx))
             try:
@@ -1738,6 +2987,19 @@ class RfmEditorMainWindow(QMainWindow):
         except Exception:
             pass
         self.selection_overlay = None
+        # Remove label item if present
+        try:
+            label_item = getattr(self, 'selection_label_item', None)
+            if label_item is not None:
+                try:
+                    attached = label_item.scene() is not None
+                except Exception:
+                    attached = False
+                if attached:
+                    self.scene.removeItem(label_item)
+        except Exception:
+            pass
+        self.selection_label_item = None
 
     def _highlight_payload(self, payload: object) -> None:
         self._clear_selection_overlay()
@@ -1773,7 +3035,36 @@ class RfmEditorMainWindow(QMainWindow):
         except Exception:
             inner = rect
         self.selection_overlay = self.scene.addRect(inner, pen)
-        self.selection_overlay.setZValue(9999)
+        # Draw the selection border above frames but below text labels
+        self.selection_overlay.setZValue(100)
+
+        # If highlighting a frame, overlay a label as a separate top-most item
+        try:
+            from .rfm_model import RfmFrame
+            if isinstance(payload, RfmFrame):
+                # Determine label text and color based on frame backfill
+                name = payload.name
+                text = f"frame {name}"
+                # Compute contrast color using renderer's token parser
+                from PySide6.QtGui import QColor
+                bg_token = getattr(payload, 'backfill_color', None)
+                if bg_token and str(bg_token).lower() != 'clear':
+                    bg = self.renderer._color_from_token(str(bg_token))
+                    r, g, b = bg.red(), bg.green(), bg.blue()
+                    luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b
+                    color = QColor(0, 0, 0) if luminance >= 140 else QColor(255, 255, 255)
+                else:
+                    color = QColor(255, 255, 255)
+                label = self.scene.addSimpleText(text)
+                label.setBrush(color)
+                label.setPos(inner.left() + 4, inner.top() + 2)
+                try:
+                    label.setZValue(1000000)
+                except Exception:
+                    pass
+                self.selection_label_item = label
+        except Exception:
+            pass
 
     def on_save(self) -> None:
         if not self.document:
@@ -1882,21 +3173,65 @@ class RfmEditorMainWindow(QMainWindow):
     def _save_recent_files(self) -> None:
         self.settings.setValue("recent_files", self.recent_files)
 
+    def _ensure_recent_menu(self):
+        try:
+            if hasattr(self, 'recent_menu') and self.recent_menu is not None:
+                # If it is still valid, return it
+                return self.recent_menu
+        except RuntimeError:
+            # Wrapper exists but C++ object was deleted; fall through to recreate
+            pass
+        # Find or create File -> Open Recent submenu
+        file_menu = None
+        try:
+            for act in self.menuBar().actions():
+                m = act.menu()
+                if m is not None and m.title() == "File":
+                    file_menu = m
+                    break
+        except Exception:
+            file_menu = None
+        if file_menu is None:
+            file_menu = self.menuBar().addMenu("File")
+        # Try to find existing "Open Recent" submenu
+        try:
+            for act in file_menu.actions():
+                sm = act.menu()
+                if sm is not None and sm.title() == "Open Recent":
+                    self.recent_menu = sm
+                    return self.recent_menu
+        except Exception:
+            pass
+        # Create a new submenu and keep reference
+        self.recent_menu = file_menu.addMenu("Open Recent")
+        return self.recent_menu
+
     def _rebuild_recent_menu(self) -> None:
-        self.recent_menu.clear()
+        menu = None
+        try:
+            menu = self._ensure_recent_menu()
+            menu.clear()
+        except Exception:
+            # Recreate and retry once
+            try:
+                self.recent_menu = None
+                menu = self._ensure_recent_menu()
+                menu.clear()
+            except Exception:
+                return
         if not getattr(self, 'recent_files', None):
             empty = QAction("No Recent Files", self)
             empty.setEnabled(False)
-            self.recent_menu.addAction(empty)
+            menu.addAction(empty)
             return
         for p in self.recent_files:
             act = QAction(p, self)
             act.triggered.connect(lambda checked=False, path=p: self._open_recent(path))
-            self.recent_menu.addAction(act)
-        self.recent_menu.addSeparator()
+            menu.addAction(act)
+        menu.addSeparator()
         clear_act = QAction("Clear Recent", self)
         clear_act.triggered.connect(self._clear_recent)
-        self.recent_menu.addAction(clear_act)
+        menu.addAction(clear_act)
 
     def _add_to_recent(self, path: str) -> None:
         if not hasattr(self, 'recent_files'):
@@ -1911,7 +3246,10 @@ class RfmEditorMainWindow(QMainWindow):
         if len(self.recent_files) > self.max_recent:
             self.recent_files = self.recent_files[: self.max_recent]
         self._save_recent_files()
-        self._rebuild_recent_menu()
+        try:
+            QTimer.singleShot(0, self._rebuild_recent_menu)
+        except Exception:
+            self._rebuild_recent_menu()
 
     def _open_recent(self, path: str) -> None:
         p = Path(path)
@@ -1926,7 +3264,10 @@ class RfmEditorMainWindow(QMainWindow):
             if ret == QMessageBox.Yes:
                 self.recent_files = [x for x in self.recent_files if x != path]
                 self._save_recent_files()
-                self._rebuild_recent_menu()
+                try:
+                    QTimer.singleShot(0, self._rebuild_recent_menu)
+                except Exception:
+                    self._rebuild_recent_menu()
             return
         if not self._maybe_save_changes():
             return
@@ -1937,7 +3278,10 @@ class RfmEditorMainWindow(QMainWindow):
     def _clear_recent(self) -> None:
         self.recent_files = []
         self._save_recent_files()
-        self._rebuild_recent_menu()
+        try:
+            QTimer.singleShot(0, self._rebuild_recent_menu)
+        except Exception:
+            self._rebuild_recent_menu()
 
     def on_insert_text(self) -> None:
         if not self.document:
@@ -1956,7 +3300,12 @@ class RfmEditorMainWindow(QMainWindow):
     def on_insert_image(self) -> None:
         if not self.document:
             self.document = RfmDocument()
-        img, _ = QFileDialog.getOpenFileName(self, "Choose Image", str(self.menu_root or (self.current_path.parent if self.current_path else Path.cwd())), "Images (*.png *.jpg *.jpeg *.bmp *.m32);;All Files (*)")
+        img, _ = QFileDialog.getOpenFileName(
+            self,
+            "Choose Image",
+            str(self.menu_root or (self.current_path.parent if self.current_path else Path.cwd())),
+            "Images (*.png *.jpg *.jpeg *.bmp *.m32);;All Files (*)",
+        )
         if not img:
             return
         img_token = img if ' ' not in img else f'"{img}"'
@@ -1990,7 +3339,12 @@ class RfmEditorMainWindow(QMainWindow):
         if mode == "(none)":
             mode = None
         # Ask optional image
-        img, _ = QFileDialog.getOpenFileName(self, "Optional Backdrop Image", str(self.menu_root or (self.current_path.parent if self.current_path else Path.cwd())), "Images (*.png *.jpg *.jpeg *.bmp *.m32);;All Files (*)")
+        img, _ = QFileDialog.getOpenFileName(
+            self,
+            "Optional Backdrop Image",
+            str(self.menu_root or (self.current_path.parent if self.current_path else Path.cwd())),
+            "Images (*.png *.jpg *.jpeg *.bmp *.m32);;All Files (*)",
+        )
         img_token = None
         if img:
             img_token = img if ' ' not in img else f'"{img}"'
@@ -2025,6 +3379,23 @@ class RfmEditorMainWindow(QMainWindow):
         self.menu_root = Path(chosen)
         self.settings.setValue("menu_root_dir", str(self.menu_root))
         self.statusBar().showMessage(f"Menu directory set to {self.menu_root}", 5000)
+        try:
+            self.renderer.menu_root = str(self.menu_root)
+        except Exception:
+            pass
+
+    def on_set_resource_dir(self) -> None:
+        start = str(self.resource_root or self.menu_root or Path.cwd())
+        chosen = QFileDialog.getExistingDirectory(self, "Choose Resource Directory (images, .m32, etc)", start)
+        if not chosen:
+            return
+        self.resource_root = Path(chosen)
+        self.settings.setValue("resource_root_dir", str(self.resource_root))
+        self.statusBar().showMessage(f"Resource directory set to {self.resource_root}", 5000)
+        try:
+            self.renderer.resource_root = str(self.resource_root)
+        except Exception:
+            pass
 
     def on_delete_selected(self) -> None:
         items = self.outline.selectedItems()
@@ -2097,10 +3468,27 @@ class RfmEditorMainWindow(QMainWindow):
             item = self.outline.itemAt(pos)
             if item is None:
                 return
+            # Keep frames with page uncollapsible; ensure they stay expanded when right-clicked
+            try:
+                marker = item.data(0, Qt.ItemDataRole.UserRole + 1)
+                if marker == "force-expanded":
+                    item.setExpanded(True)
+            except Exception:
+                pass
             menu = QMenu(self)
-            del_act = QAction("Delete", self)
-            del_act.triggered.connect(self.on_delete_selected)
-            menu.addAction(del_act)
+            payload = item.data(0, Qt.ItemDataRole.UserRole)
+            if isinstance(payload, tuple) and payload and payload[0] == 'frame':
+                del_act = QAction("Delete Frame", self)
+                del_act.triggered.connect(self.on_delete_selected)
+                menu.addAction(del_act)
+            elif isinstance(payload, tuple) and payload and payload[0] == 'element':
+                del_act = QAction("Delete Element", self)
+                del_act.triggered.connect(self.on_delete_selected)
+                menu.addAction(del_act)
+            else:
+                del_act = QAction("Delete", self)
+                del_act.triggered.connect(self.on_delete_selected)
+                menu.addAction(del_act)
             menu.popup(self.outline.viewport().mapToGlobal(pos))
         except Exception:
             pass

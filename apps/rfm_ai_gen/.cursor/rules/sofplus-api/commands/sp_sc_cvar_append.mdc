@@ -1,0 +1,23 @@
+---
+description: sp_sc_cvar_append - Append text to a cvar. The command does not put spaces between parameters.
+alwaysApply: false
+---
+
+### sp_sc_cvar_append
+
+sp_sc_cvar_append
+
+Append text to a cvar. The command does not put spaces between parameters.
+
+Synopsis:
+
+```txt
+sp_sc_cvar_append
+CVAR
+
+STRING...
+```
+Parameters:
+
+- CVAR:
+- STRING...:

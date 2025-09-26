@@ -1,0 +1,23 @@
+---
+description: sp_sc_cvar_sset - Set a cvar. The command is similar to sset, but this command does not put spaces between parameters.
+alwaysApply: false
+---
+
+### sp_sc_cvar_sset
+
+sp_sc_cvar_sset
+
+Set a cvar. The command is similar to sset, but this command does not put spaces between parameters.
+
+Synopsis:
+
+```txt
+sp_sc_cvar_sset
+CVAR
+
+STRING...
+```
+Parameters:
+
+- CVAR:
+- STRING...:

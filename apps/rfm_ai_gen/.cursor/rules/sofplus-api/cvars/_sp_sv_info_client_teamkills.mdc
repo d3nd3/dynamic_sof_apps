@@ -1,0 +1,10 @@
+---
+description: _sp_sv_info_client_teamkills - Is set to the clients number of teamkills when the sp_sv_info_client command is executed
+alwaysApply: false
+---
+
+### _sp_sv_info_client_teamkills
+
+_sp_sv_info_client_teamkills
+
+Is set to the clients number of teamkills when the sp_sv_info_client command is executed

@@ -1,0 +1,11 @@
+---
+description: RMF layout element <translate> to map serverinfo cvars to readable fields
+---
+
+### Purpose
+Translate serverinfo cvars to named fields or bitfields for display.
+
+### Options
+- `conv <cvar> <name>` — rename a cvar.
+- `convbits <cvar> <name> <list>` — map bitfield to comma-separated names.
+

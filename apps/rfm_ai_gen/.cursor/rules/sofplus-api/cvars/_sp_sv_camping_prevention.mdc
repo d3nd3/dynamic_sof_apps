@@ -1,0 +1,15 @@
+---
+description: _sp_sv_camping_prevention - Camper protection. The server reduces player health and plays an annoying sound if a players stays at one location for too long.
+alwaysApply: false
+---
+
+### _sp_sv_camping_prevention
+
+_sp_sv_camping_prevention
+
+Camper protection. The server reduces player health and plays an annoying sound if a players stays at one location for too long.
+
+Values:
+
+- 0: Disabled (default)
+- 1: Enabled

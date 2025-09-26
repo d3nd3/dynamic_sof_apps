@@ -7,16 +7,19 @@ from pathlib import Path
 from .rfm_model import RfmDocument, RfmElement, RfmFrame
 
 
-STM_OPEN = re.compile(r"<\s*stm\s*>", re.IGNORECASE)
+FRAME_SCAN = re.compile(r"<\s*frame\s+(\S+)\s+(\d+)\s+(\d+)([^>]*)>", re.IGNORECASE)
+
+# Accept <stm> and <stm ...> variants
+STM_OPEN = re.compile(r"<\s*stm(\s+[^>]*)?>", re.IGNORECASE)
 STM_CLOSE = re.compile(r"<\s*/\s*stm\s*>", re.IGNORECASE)
 
 
-def _tokenize(content: str) -> List[Tuple[str, str]]:
+def _tokenize(content: str, *, ignore_stm_wrappers: bool = False) -> List[Tuple[str, str]]:
     tokens: List[Tuple[str, str]] = []
     i = 0
     n = len(content)
-    inside_stm = False
-    has_stm = bool(STM_OPEN.search(content))
+    stm_depth = 0
+    has_stm = bool(STM_OPEN.search(content)) and not ignore_stm_wrappers
     while i < n:
         if content[i] == "<":
             j = i + 1
@@ -31,20 +34,26 @@ def _tokenize(content: str) -> List[Tuple[str, str]]:
                 j += 1
             tag = content[i:j]
             low = tag.lower().strip()
-            if low == "<stm>":
-                inside_stm = True
-            elif low == "</stm>":
-                inside_stm = False
+            is_stm_open = low.startswith("<stm") and not low.startswith("</stm")
+            is_stm_close = low.startswith("</stm")
+            if is_stm_open and not ignore_stm_wrappers:
+                stm_depth += 1
+            elif is_stm_close and not ignore_stm_wrappers:
+                stm_depth = max(0, stm_depth - 1)
             else:
-                if inside_stm or not has_stm:
-                    tokens.append(("tag", tag))
+                # Skip emitting stm wrappers when ignoring wrappers
+                if ignore_stm_wrappers and (is_stm_open or is_stm_close):
+                    pass
+                else:
+                    if stm_depth > 0 or not has_stm or ignore_stm_wrappers:
+                        tokens.append(("tag", tag))
             i = j
         else:
             j = i
             while j < n and content[j] != "<":
                 j += 1
             text = content[i:j]
-            if text and (inside_stm or not has_stm):
+            if text and (stm_depth > 0 or not has_stm or ignore_stm_wrappers):
                 tokens.append(("text", text))
             i = j
     return tokens
@@ -83,7 +92,15 @@ def _resolve_include_path(target: str, base_dir: Path) -> Path | None:
     return None
 
 
-def _expand_includes(tokens: List[Tuple[str, str]], base_dir: Path, seen: set[Path] | None = None) -> List[Tuple[str, str]]:
+def _expand_includes(
+    tokens: List[Tuple[str, str]],
+    base_dir: Path,
+    seen: set[Path] | None = None,
+    *,
+    expand_exinclude: bool = False,
+    exinclude_mode: str = "zero",
+    ignore_stm_wrappers: bool = False,
+) -> List[Tuple[str, str]]:
     """Inline <include target> by replacing the tag with the referenced file's tokens.
 
     - Recurses into nested includes
@@ -103,24 +120,79 @@ def _expand_includes(tokens: List[Tuple[str, str]], base_dir: Path, seen: set[Pa
                     if resolved and resolved not in seen:
                         try:
                             text = resolved.read_text(encoding="utf-8", errors="ignore")
-                            sub_tokens = _tokenize(text)
+                            sub_tokens = _tokenize(text, ignore_stm_wrappers=ignore_stm_wrappers)
                             # Recurse with the included file's directory and updated seen set
-                            out.extend(_expand_includes(sub_tokens, resolved.parent, seen | {resolved}))
+                            out.extend(
+                                _expand_includes(
+                                    sub_tokens,
+                                    resolved.parent,
+                                    seen | {resolved},
+                                    expand_exinclude=expand_exinclude,
+                                    exinclude_mode=exinclude_mode,
+                                )
+                            )
                             continue  # replaced this <include> tag
                         except Exception:
                             pass
+                # Conditional include: <exinclude cvar page_if_zero page_if_nonzero>
+                # Only expand during rendering (expand_exinclude=True). Otherwise keep the tag intact
+                # so the base document preserves authoring intent and allows toggling later.
+                if parts and parts[0].lower() == "exinclude" and len(parts) >= 4:
+                    if expand_exinclude:
+                        # Choose target by mode
+                        try:
+                            if str(exinclude_mode).lower() in ("zero", "0", "false"):
+                                target = parts[2].strip('"')
+                            else:
+                                target = parts[3].strip('"')
+                        except Exception:
+                            target = parts[2].strip('"')
+                        resolved = _resolve_include_path(target, base_dir)
+                        if resolved and resolved not in seen:
+                            try:
+                                text = resolved.read_text(encoding="utf-8", errors="ignore")
+                                sub_tokens = _tokenize(text, ignore_stm_wrappers=ignore_stm_wrappers)
+                                out.extend(
+                                    _expand_includes(
+                                        sub_tokens,
+                                        resolved.parent,
+                                        seen | {resolved},
+                                        expand_exinclude=expand_exinclude,
+                                        exinclude_mode=exinclude_mode,
+                                        ignore_stm_wrappers=ignore_stm_wrappers,
+                                    )
+                                )
+                                continue
+                            except Exception:
+                                pass
+                    # Not expanding: fall-through to keep original tag
         out.append((kind, value))
     return out
 
 
-def parse_rfm_content(content: str, file_path: str | None = None) -> RfmDocument:
-    tokens = _tokenize(content)
+def parse_rfm_content(
+    content: str,
+    file_path: str | None = None,
+    *,
+    expand_include: bool = True,
+    expand_exinclude: bool = False,
+    exinclude_mode: str = "zero",
+    ignore_stm_wrappers: bool = False,
+) -> RfmDocument:
+    tokens = _tokenize(content, ignore_stm_wrappers=ignore_stm_wrappers)
     # Expand <include> tags in-place before building the model
     try:
         base_dir = Path(file_path).parent if file_path else Path.cwd()
     except Exception:
         base_dir = Path.cwd()
-    tokens = _expand_includes(tokens, base_dir)
+    if expand_include or expand_exinclude:
+        tokens = _expand_includes(
+            tokens,
+            base_dir,
+            expand_exinclude=expand_exinclude,
+            exinclude_mode=exinclude_mode,
+            ignore_stm_wrappers=ignore_stm_wrappers,
+        )
     doc = RfmDocument(segments=tokens, file_path=file_path, doc_key=file_path or "<memory>")
 
     # Pass 1: collect frames and simple elements for outline/preview
@@ -163,6 +235,7 @@ def parse_rfm_content(content: str, file_path: str | None = None) -> RfmDocument
             consumed = [False] * len(tail_tokens)
             while j < len(tail_tokens):
                 tok = tail_tokens[j].lower()
+                # tolerate quotes around names and page values
                 if tok == "border" and j + 3 < len(tail_tokens):
                     try:
                         frame.border_width = int(tail_tokens[j + 1])
@@ -179,7 +252,7 @@ def parse_rfm_content(content: str, file_path: str | None = None) -> RfmDocument
                     j += 2
                     continue
                 if tok == "cut" and j + 1 < len(tail_tokens):
-                    frame.cut_from = tail_tokens[j + 1]
+                    frame.cut_from = tail_tokens[j + 1].strip('"')
                     consumed[j] = consumed[j + 1] = True
                     j += 2
                     continue
@@ -448,6 +521,98 @@ def parse_rfm_content(content: str, file_path: str | None = None) -> RfmDocument
             doc.backdrop_image = image
             doc.backdrop_bgcolor = bgcolor
 
+    # Fallback: if no frames were detected but content clearly contains frame tags, retry with STM wrappers ignored
+    try:
+        raw_lower = content.lower()
+    except Exception:
+        raw_lower = ""
+    if not doc.frames and "<frame" in raw_lower and not ignore_stm_wrappers:
+        try:
+            alt = parse_rfm_content(
+                content,
+                file_path=file_path,
+                expand_exinclude=expand_exinclude,
+                exinclude_mode=exinclude_mode,
+                ignore_stm_wrappers=True,
+            )
+            if alt and (alt.frames or alt.segments):
+                return alt
+        except Exception:
+            pass
+    # Last-resort recovery: if frames still empty, scan content with a robust regex and synthesize minimal frames
+    if not doc.frames and "<frame" in raw_lower:
+        try:
+            for m in FRAME_SCAN.finditer(content):
+                fname = m.group(1)
+                try:
+                    w = int(m.group(2)); h = int(m.group(3))
+                except Exception:
+                    continue
+                tail = m.group(4) or ""
+                fr = RfmFrame(name=fname, width=w, height=h, raw_tail=tail.strip())
+                # Minimal tail parse: page/cut/border/backfill/cursor
+                toks = tail.split()
+                j = 0
+                while j < len(toks):
+                    t = toks[j].lower()
+                    if t == "page" and j + 1 < len(toks):
+                        fr.page = toks[j + 1].strip('"'); j += 2; continue
+                    if t == "cpage" and j + 1 < len(toks):
+                        fr.cpage_cvar = toks[j + 1].strip('"'); j += 2; continue
+                    if t == "cut" and j + 1 < len(toks):
+                        fr.cut_from = toks[j + 1].strip('"'); j += 2; continue
+                    if t == "border" and j + 3 < len(toks):
+                        try:
+                            fr.border_width = int(toks[j + 1])
+                            fr.border_line_width = int(toks[j + 2])
+                            fr.border_line_color = toks[j + 3]
+                        except Exception:
+                            pass
+                        j += 4; continue
+                    if t == "backfill" and j + 1 < len(toks):
+                        fr.backfill_color = toks[j + 1]; j += 2; continue
+                    if t == "cursor" and j + 1 < len(toks):
+                        try:
+                            fr.cursor = int(toks[j + 1])
+                        except Exception:
+                            pass
+                        j += 2; continue
+                    j += 1
+                doc.frames[fr.name] = fr
+        except Exception:
+            pass
+    # If segments are empty (tokenizer failed), synthesize a minimal segmentation so raw view isn't blank
+    if not doc.segments:
+        try:
+            parts: list[tuple[str, str]] = []
+            i = 0
+            n = len(content)
+            while i < n:
+                if content[i] == '<':
+                    j = i + 1
+                    in_q = False
+                    while j < n:
+                        c = content[j]
+                        if c == '"':
+                            in_q = not in_q
+                        if c == '>' and not in_q:
+                            j += 1
+                            break
+                        j += 1
+                    parts.append(("tag", content[i:j]))
+                    i = j
+                else:
+                    j = i
+                    while j < n and content[j] != '<':
+                        j += 1
+                    txt = content[i:j]
+                    if txt:
+                        parts.append(("text", txt))
+                    i = j
+            if parts:
+                doc.segments = parts
+        except Exception:
+            pass
     return doc
 
 

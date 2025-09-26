@@ -1,0 +1,25 @@
+---
+description: sp_sc_cvar_unescape - UnEscape text
+alwaysApply: false
+---
+
+### sp_sc_cvar_unescape
+
+sp_sc_cvar_unescape
+
+UnEscape text
+
+Hexadecimal escape sequences %hh, where hh is 00 .. ff, are replaced by their character representation
+
+Synopsis:
+
+```txt
+sp_sc_cvar_unescape
+DST CVAR
+
+SRC CVAR
+```
+Parameters:
+
+- DST CVAR:
+- SRC CVAR:

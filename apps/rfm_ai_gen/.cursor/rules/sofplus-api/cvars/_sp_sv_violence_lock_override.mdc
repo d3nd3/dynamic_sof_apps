@@ -1,0 +1,15 @@
+---
+description: _sp_sv_violence_lock_override - Override violence settings
+alwaysApply: false
+---
+
+### _sp_sv_violence_lock_override
+
+_sp_sv_violence_lock_override
+
+Override violence settings
+
+Values:
+
+- 0: No (default)
+- 1: Yes, the server will run in full violence mode and ignore the settings in sv_violence. The server will still report the violence settings of sv_violence to clients, which means that clients with their violence set to low will be able to play in your full violence server.

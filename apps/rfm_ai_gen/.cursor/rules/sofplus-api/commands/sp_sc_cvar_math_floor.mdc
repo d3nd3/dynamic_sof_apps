@@ -1,0 +1,20 @@
+---
+description: sp_sc_cvar_math_floor - Find integer floor
+alwaysApply: false
+---
+
+### sp_sc_cvar_math_floor
+
+sp_sc_cvar_math_floor
+
+Find integer floor
+
+Synopsis:
+
+```txt
+sp_sc_cvar_math_floor
+CVAR
+```
+Parameters:
+
+- CVAR:

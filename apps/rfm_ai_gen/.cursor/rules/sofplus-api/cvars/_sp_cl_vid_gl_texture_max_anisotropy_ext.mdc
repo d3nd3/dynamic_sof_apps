@@ -1,0 +1,14 @@
+---
+description: _sp_cl_vid_gl_texture_max_anisotropy_ext - OpenGL GL_TEXTURE_MAX_ANISOTROPY_EXT. Anisotropic filtering requires taking multiple samples from the various mipmaps. The control on the quality of anisotropic filtering is in limiting the number of samples used. Raising the maximum number of samples taken will generally make the result look better, but it may also decrease performance.
+alwaysApply: false
+---
+
+### _sp_cl_vid_gl_texture_max_anisotropy_ext
+
+_sp_cl_vid_gl_texture_max_anisotropy_ext
+
+OpenGL GL_TEXTURE_MAX_ANISOTROPY_EXT. Anisotropic filtering requires taking multiple samples from the various mipmaps. The control on the quality of anisotropic filtering is in limiting the number of samples used. Raising the maximum number of samples taken will generally make the result look better, but it may also decrease performance.
+
+Values:
+
+- 1 .. 16: Use this value (default is 2)

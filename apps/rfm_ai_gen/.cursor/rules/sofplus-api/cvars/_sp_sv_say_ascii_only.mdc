@@ -1,0 +1,15 @@
+---
+description: _sp_sv_say_ascii_only - Only ASCII characters 32 .. 127 will be printed
+alwaysApply: false
+---
+
+### _sp_sv_say_ascii_only
+
+_sp_sv_say_ascii_only
+
+Only ASCII characters 32 .. 127 will be printed
+
+Values:
+
+- 0: No (default)
+- 1: Yes

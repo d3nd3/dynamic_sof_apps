@@ -1,0 +1,14 @@
+---
+description: _sp_sv_vote_num_min - Minimum number of clients that must vote for the vote to be valid
+alwaysApply: false
+---
+
+### _sp_sv_vote_num_min
+
+_sp_sv_vote_num_min
+
+Minimum number of clients that must vote for the vote to be valid
+
+Values:
+
+- Any number: Number of clients that must vote (default = 1)

@@ -1,0 +1,26 @@
+---
+description: sp_sc_cvar_replace - Replace characters in a cvar
+alwaysApply: false
+---
+
+### sp_sc_cvar_replace
+
+sp_sc_cvar_replace
+
+Replace characters in a cvar
+
+Synopsis:
+
+```txt
+sp_sc_cvar_replace
+DST CVAR
+
+SRC CVAR
+
+REPLACE...
+```
+Parameters:
+
+- DST CVAR:
+- SRC CVAR:
+- REPLACE...:

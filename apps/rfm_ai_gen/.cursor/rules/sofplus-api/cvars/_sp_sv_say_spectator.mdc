@@ -1,0 +1,16 @@
+---
+description: _sp_sv_say_spectator - Control `say` behaviour for spectators
+alwaysApply: false
+---
+
+### _sp_sv_say_spectator
+
+_sp_sv_say_spectator
+
+Control `say` behaviour for spectators
+
+Values:
+
+- 0: Disable
+- 1: Enable (default)
+- 2: Only spectators. You will see `(-)` to indicate that less people than intended may receive the message.

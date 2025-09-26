@@ -1,0 +1,42 @@
+---
+description: sp_sc_flow_if - Flow control - IF
+alwaysApply: false
+---
+
+### sp_sc_flow_if
+
+sp_sc_flow_if
+
+Flow control: IF
+
+Synopsis:
+
+```txt
+sp_sc_flow_if
+TYPE
+
+CV-TYPE
+
+CVAR/VALUE
+
+COMPARE
+
+CV-TYPE
+
+CVAR/VALUE
+
+TRUE COMMAND
+ [
+FALSE COMMAND
+]
+```
+Parameters:
+
+- TYPE:
+- CV-TYPE:
+- CVAR/VALUE: ` is a variable name
+- CVAR/VALUE: ` is a value
+- CVAR/VALUE:
+- COMPARE:
+- TRUE COMMAND:
+- FALSE COMMAND:

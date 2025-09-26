@@ -1,0 +1,20 @@
+---
+description: dot_vote_timelimit - .vote timelimit
+alwaysApply: false
+---
+
+### dot_vote_timelimit
+
+.vote timelimit
+
+Start a vote to change the timelimit
+
+Synopsis:
+
+```txt
+.vote timelimit
+TIMELIMIT
+```
+Parameters:
+
+- TIMELIMIT:

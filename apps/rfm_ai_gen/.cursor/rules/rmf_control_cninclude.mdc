@@ -1,0 +1,12 @@
+---
+description: RMF control element <cninclude cvar page> include if cvar is zero
+---
+
+### Purpose
+Include another page if a cvar evaluates to zero.
+
+### Example
+```text
+<cninclude no_won m_public_server>
+```
+

@@ -1,0 +1,27 @@
+---
+description: sp_sv_client_cvar_set - Set a cvar on the client
+alwaysApply: false
+---
+
+### sp_sv_client_cvar_set
+
+sp_sv_client_cvar_set
+
+Set a cvar on the client
+
+Synopsis:
+
+```txt
+sp_sv_client_cvar_set
+SLOT
+
+CVAR NUMBER
+
+STRING
+```
+Parameters:
+
+- SLOT:
+- CVAR NUMBER:
+- CVAR NUMBER: ` will be filled.
+- STRING:

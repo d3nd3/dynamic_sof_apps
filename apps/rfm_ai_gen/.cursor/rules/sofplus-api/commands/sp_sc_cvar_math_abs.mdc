@@ -1,0 +1,20 @@
+---
+description: sp_sc_cvar_math_abs - Calculate absolute value
+alwaysApply: false
+---
+
+### sp_sc_cvar_math_abs
+
+sp_sc_cvar_math_abs
+
+Calculate absolute value
+
+Synopsis:
+
+```txt
+sp_sc_cvar_math_abs
+CVAR
+```
+Parameters:
+
+- CVAR:

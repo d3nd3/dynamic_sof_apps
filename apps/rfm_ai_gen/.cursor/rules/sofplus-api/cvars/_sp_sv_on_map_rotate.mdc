@@ -1,0 +1,10 @@
+---
+description: _sp_sv_on_map_rotate - Contains a comma separated list of function names to be executed when the map is about to change. The name of the next map is available in _sp_sv_info_map_next.
+alwaysApply: false
+---
+
+### _sp_sv_on_map_rotate
+
+_sp_sv_on_map_rotate
+
+Contains a comma separated list of function names to be executed when the map is about to change. The name of the next map is available in _sp_sv_info_map_next.

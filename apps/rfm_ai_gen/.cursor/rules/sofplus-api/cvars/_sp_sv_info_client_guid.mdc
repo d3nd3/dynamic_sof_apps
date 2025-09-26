@@ -1,0 +1,15 @@
+---
+description: _sp_sv_info_client_guid - Is set to the clients anti-cheat guid when the sp_sv_info_client command is executed
+alwaysApply: false
+---
+
+### _sp_sv_info_client_guid
+
+_sp_sv_info_client_guid
+
+Is set to the clients anti-cheat guid when the sp_sv_info_client command is executed
+
+Values:
+
+- Empty: The client isn't using an anti-cheat, or the anti-cheat has been disabled on the server
+- Other: The client is using an anti-cheat

@@ -1,0 +1,10 @@
+---
+description: _sp_sv_on_map_begin - Contains a comma separated list of function names to be executed when the map begins
+alwaysApply: false
+---
+
+### _sp_sv_on_map_begin
+
+_sp_sv_on_map_begin
+
+Contains a comma separated list of function names to be executed when the map begins

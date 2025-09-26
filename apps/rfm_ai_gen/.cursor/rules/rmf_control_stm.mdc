@@ -1,0 +1,23 @@
+---
+description: RMF control element <stm> to start/end a menu page; one per file
+---
+
+### When to use
+- Wrap all parsable RMF content between `<stm>` and `</stm>`.
+- Only one pair per `.rmf` file; anything outside is ignored.
+
+### Options (inside <stm>)
+- `nopush` — do not push page on stack; cannot be revisited.
+- `waitanim` — block input until ghoul animations finish.
+- `fragile` — any keypress exits this screen.
+- `global` — disable default scissoring (page draws outside frame bounds).
+- `command <cmd>` — execute before creating the page.
+- `resize <width> <height>` — resize current frame and center it.
+
+### Example
+```text
+<stm nopush command "exec menus/setup" resize 640 480>
+  <frame default 640 480 page main>
+</stm>
+```
+

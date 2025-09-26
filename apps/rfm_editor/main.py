@@ -832,12 +832,18 @@ class RfmEditorMainWindow(QMainWindow):
         self.menu_root: Optional[Path] = Path(mrd) if isinstance(mrd, str) and mrd else None
         res = self.settings.value("resource_root_dir", "")
         self.resource_root: Optional[Path] = Path(res) if isinstance(res, str) and res else None
-        # Keep renderer roots in sync
+        # Keep renderer roots in sync and initialize exinclude mode from settings
         try:
             self.renderer.menu_root = str(self.menu_root) if self.menu_root else None
             self.renderer.resource_root = str(self.resource_root) if self.resource_root else None
         except Exception:
             pass
+        # Exinclude rendering mode: 'zero' or 'nonzero'
+        try:
+            pref_mode = str(self.settings.value("exinclude_mode", "zero"))
+            self.exinclude_mode: str = "nonzero" if pref_mode.lower() in ("nonzero", "1", "true", "yes") else "zero"
+        except Exception:
+            self.exinclude_mode = "zero"
 
         # UI
         self._init_menu()
@@ -1037,7 +1043,7 @@ class RfmEditorMainWindow(QMainWindow):
         # Top: selection summary bar below menu
         try:
             self.summary_bar = QLabel("", container)
-            self.summary_bar.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
+            self.summary_bar.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
             self.summary_bar.setWordWrap(False)
             try:
                 self.summary_bar.setTextFormat(Qt.TextFormat.RichText)
@@ -1252,6 +1258,24 @@ class RfmEditorMainWindow(QMainWindow):
                     return None
 
             self.renderer.page_resolver = _resolve_page
+        except Exception:
+            pass
+        # Provide an exinclude-expanding parser hook to the renderer so it can render the chosen branch
+        try:
+            def _parse_with_exinclude_mode(serialized_text: str, file_path: Optional[str], mode: str) -> Optional[RfmDocument]:
+                try:
+                    return parse_rfm_content(
+                        serialized_text,
+                        file_path=file_path,
+                        expand_include=True,
+                        expand_exinclude=True,
+                        exinclude_mode=mode,
+                        ignore_stm_wrappers=True,
+                    )
+                except Exception:
+                    return None
+            self.renderer.exinclude_mode = getattr(self, 'exinclude_mode', 'zero')
+            self.renderer.exinclude_parser = _parse_with_exinclude_mode
         except Exception:
             pass
 
@@ -1526,7 +1550,17 @@ class RfmEditorMainWindow(QMainWindow):
             except Exception:
                 replace_includes = True
             if replace_includes:
-                text = serialize_rfm(self.document)
+                # Expand regular includes (already part of model) AND exinclude based on current toggle
+                base_serialized = serialize_rfm(self.document)
+                expanded_doc = parse_rfm_content(
+                    base_serialized,
+                    file_path=getattr(self.document, 'file_path', None),
+                    expand_include=True,
+                    expand_exinclude=True,
+                    exinclude_mode=getattr(self, 'exinclude_mode', 'zero'),
+                    ignore_stm_wrappers=True,
+                )
+                text = serialize_rfm(expanded_doc)
             else:
                 fp = getattr(self.document, 'file_path', None)
                 if fp:
@@ -1650,6 +1684,12 @@ class RfmEditorMainWindow(QMainWindow):
             return
         self._reset_workspace()
         self.load_file(Path(chosen))
+        # After loading, also preload pages from frames revealed only via include/exinclude per current toggle
+        try:
+            if self.document and self.document.file_path:
+                self._preload_pages_from_expanded_docs([self.document.file_path])
+        except Exception:
+            pass
 
     def load_file(self, path: Path) -> None:
         try:
@@ -1658,7 +1698,14 @@ class RfmEditorMainWindow(QMainWindow):
             QMessageBox.critical(self, "Error", f"Failed to read file:\n{e}")
             return
         try:
-            self.document = parse_rfm_content(text, file_path=str(path))
+            # Store the base document without exinclude expansion; expansion happens at render time
+            # Accept <stm ...> wrappers by ignoring attributes in tokenizer
+            self.document = parse_rfm_content(
+                text,
+                file_path=str(path),
+                ignore_stm_wrappers=True,
+                expand_include=False,
+            )
         except Exception as e:  # noqa: BLE001
             QMessageBox.critical(self, "Parse Error", f"Failed to parse:\n{e}")
             return
@@ -1673,6 +1720,11 @@ class RfmEditorMainWindow(QMainWindow):
             # Auto-preload referenced pages for this document
             try:
                 self._autopreload_pages(self.document.file_path)
+            except Exception:
+                pass
+            # Additionally, preload pages from frames revealed only via include/exinclude per current toggle
+            try:
+                self._preload_pages_from_expanded_docs([self.document.file_path])
             except Exception:
                 pass
             # Add to recent
@@ -1829,6 +1881,26 @@ class RfmEditorMainWindow(QMainWindow):
 
         for key in ordered:
             doc = self.documents_by_key[key]
+            # Use an expanded view of the document for the Frames section when base doc has no frames.
+            # Expansion respects the current exinclude toggle so outline reflects the element view mode.
+            eff_doc = doc
+            try:
+                if not doc.frames:
+                    from .rfm_serializer import serialize_rfm  # late import to avoid cycles
+                    from .rfm_parser import parse_rfm_content
+                    base_serialized = serialize_rfm(doc)
+                    expanded = parse_rfm_content(
+                        base_serialized,
+                        file_path=getattr(doc, 'file_path', None),
+                        expand_include=True,
+                        expand_exinclude=True,
+                        exinclude_mode=getattr(self, 'exinclude_mode', 'zero'),
+                        ignore_stm_wrappers=True,
+                    )
+                    if expanded and getattr(expanded, 'frames', None):
+                        eff_doc = expanded
+            except Exception:
+                pass
             if getattr(self, 'main_doc_key', None) == key:
                 title = f"Entry - {Path(key).name}"
             else:
@@ -1849,8 +1921,22 @@ class RfmEditorMainWindow(QMainWindow):
                 pass
             self.outline.addTopLevelItem(root)
 
-            # Frames
-            frames = QTreeWidgetItem(["Frames", str(len(doc.frames))])
+            # Exinclude toggle item within this document root
+            try:
+                mode_label = "Zero" if str(getattr(self, 'exinclude_mode', 'zero')).lower() in ("zero", "0", "false") else "Non-zero"
+                ex_item = QTreeWidgetItem([f"Exinclude: {mode_label}", "toggle"]) 
+                ex_item.setData(0, Qt.ItemDataRole.UserRole, ("toggle-exinclude", key))
+                # Non-draggable, non-droppable
+                flags = ex_item.flags()
+                flags &= ~Qt.ItemFlag.ItemIsDragEnabled
+                flags &= ~Qt.ItemFlag.ItemIsDropEnabled
+                ex_item.setFlags(flags)
+                root.addChild(ex_item)
+            except Exception:
+                pass
+
+            # Frames (based on expanded document if needed)
+            frames = QTreeWidgetItem(["Frames", str(len(eff_doc.frames))])
             frames.setData(0, Qt.ItemDataRole.UserRole, ("doc-category", key, "frames"))
             try:
                 flags = frames.flags()
@@ -1862,15 +1948,15 @@ class RfmEditorMainWindow(QMainWindow):
                 pass
             root.addChild(frames)
             # Build parent-child map for frames
-            frames_by_name = {f.name: f for f in doc.frames.values()}
+            frames_by_name = {f.name: f for f in eff_doc.frames.values()}
             children_by_parent: dict[str, list] = {}
-            for f in doc.frames.values():
+            for f in eff_doc.frames.values():
                 p = getattr(f, 'cut_from', None)
                 if p and p in frames_by_name:
                     children_by_parent.setdefault(p, []).append(f)
             # Create items for each frame once
             frame_item_by_name: dict[str, QTreeWidgetItem] = {}
-            for frame in doc.frames.values():
+            for frame in eff_doc.frames.values():
                 it = QTreeWidgetItem([f"frame {frame.name}", f"{frame.width}x{frame.height}"])
                 it.setData(0, Qt.ItemDataRole.UserRole, ("frame", key, frame.name))
                 try:
@@ -1912,7 +1998,7 @@ class RfmEditorMainWindow(QMainWindow):
                         child_item.addChild(page_node)
                     attach_children(ch.name, child_item)
             # Top-level frames (no valid cut_from) attach directly under Frames
-            for f in doc.frames.values():
+            for f in eff_doc.frames.values():
                 if not getattr(f, 'cut_from', None) or getattr(f, 'cut_from') not in frames_by_name:
                     top_item = frame_item_by_name.get(f.name)
                     if top_item is None:
@@ -2136,6 +2222,93 @@ class RfmEditorMainWindow(QMainWindow):
         # Multi-document aware selection
         if isinstance(payload, tuple):
             tag = payload[0]
+            # Handle exinclude toggle selection: flip mode and reparse active document
+            if tag == "toggle-exinclude":
+                try:
+                    # Toggle
+                    self.exinclude_mode = "nonzero" if str(self.exinclude_mode).lower() in ("zero", "0", "false") else "zero"
+                    # Persist
+                    try:
+                        self.settings.setValue("exinclude_mode", self.exinclude_mode)
+                        self.settings.sync()
+                    except Exception:
+                        pass
+                    # Sync renderer mode and refresh; outline rebuild updates the label
+                    try:
+                        self.renderer.exinclude_mode = self.exinclude_mode
+                    except Exception:
+                        pass
+                    # Preload page .rmf files for frames revealed by the current exinclude mode across all open documents
+                    try:
+                        from .rfm_serializer import serialize_rfm
+                        from .rfm_parser import parse_rfm_content
+                        from pathlib import Path as _Path
+                        # Iterate a snapshot since we'll mutate documents_by_key
+                        for base_key, base_doc in list(self.documents_by_key.items()):
+                            try:
+                                base_serial = serialize_rfm(base_doc)
+                                eff = parse_rfm_content(
+                                    base_serial,
+                                    file_path=getattr(base_doc, 'file_path', None),
+                                    expand_include=True,
+                                    expand_exinclude=True,
+                                    exinclude_mode=self.exinclude_mode,
+                                    ignore_stm_wrappers=True,
+                                )
+                            except Exception:
+                                eff = None
+                            if not eff:
+                                continue
+                            for fr in list(getattr(eff, 'frames', {}).values()):
+                                page_name = getattr(fr, 'page', None)
+                                if not page_name:
+                                    continue
+                                cand = self._resolve_page_candidate_from_base(page_name, base_key)
+                                try:
+                                    sub_key = str(_Path(cand).resolve())
+                                except Exception:
+                                    sub_key = str(cand)
+                                if sub_key in self.documents_by_key:
+                                    continue
+                                # Create minimal file if missing
+                                if not cand.exists():
+                                    try:
+                                        cand.parent.mkdir(parents=True, exist_ok=True)
+                                        cand.write_text("<stm>\n\n</stm>\n", encoding='utf-8')
+                                    except Exception:
+                                        continue
+                                # Load and register the sub-document
+                                try:
+                                    text = cand.read_text(encoding='utf-8', errors='ignore')
+                                except Exception:
+                                    continue
+                                subdoc = None
+                                try:
+                                    subdoc = parse_rfm_content(text, file_path=str(cand))
+                                except Exception:
+                                    subdoc = None
+                                if subdoc is None:
+                                    continue
+                                self.documents_by_key[sub_key] = subdoc
+                                # Label as a named frame document in the outline
+                                try:
+                                    if getattr(fr, 'name', None):
+                                        self.doc_display_names[sub_key] = f"Frame {fr.name} - {_Path(cand).name}"
+                                except Exception:
+                                    pass
+                                # Recursively preload pages referenced by the new document
+                                try:
+                                    self._autopreload_pages(sub_key)
+                                except Exception:
+                                    pass
+                    except Exception:
+                        pass
+                    self.refresh_outline()
+                    self.refresh_scene()
+                    # Keep the toggle item selected for immediate feedback
+                    return
+                except Exception:
+                    pass
             # Prevent collapsing frames that have page nodes by re-expanding selection if needed
             try:
                 if tag == "frame":
@@ -2233,7 +2406,29 @@ class RfmEditorMainWindow(QMainWindow):
                     self.refresh_scene()
                 except Exception:
                     pass
-                frame = self.documents_by_key[doc_key].frames.get(frame_name)
+                # Try to find the frame in the base doc; if not present (only via include/exinclude),
+                # build an expanded view consistent with current toggle and use that for selection/props.
+                base_doc = self.documents_by_key.get(doc_key)
+                frame = None
+                if base_doc:
+                    frame = base_doc.frames.get(frame_name)
+                if frame is None and base_doc is not None:
+                    try:
+                        from .rfm_serializer import serialize_rfm
+                        from .rfm_parser import parse_rfm_content
+                        serial = serialize_rfm(base_doc)
+                        exp = parse_rfm_content(
+                            serial,
+                            file_path=getattr(base_doc, 'file_path', None),
+                            expand_include=True,
+                            expand_exinclude=True,
+                            exinclude_mode=getattr(self, 'exinclude_mode', 'zero'),
+                            ignore_stm_wrappers=True,
+                        )
+                        if exp:
+                            frame = exp.frames.get(frame_name)
+                    except Exception:
+                        frame = None
                 if frame:
                     self.populate_props(frame)
                     self._highlight_payload(frame)
@@ -2551,6 +2746,83 @@ class RfmEditorMainWindow(QMainWindow):
                 pass
             # Recurse
             self._autopreload_pages(key, visited)
+
+    def _preload_pages_from_expanded_docs(self, doc_keys: Optional[list[str]] = None) -> None:
+        """Expand documents according to current exinclude mode and preload all referenced page .rmf files.
+
+        - Operates on provided doc_keys or all open documents by default
+        - Creates minimal files if missing (<stm> shells)
+        - Registers loaded docs into documents_by_key and labels with frame name
+        - Recursively preloads pages referenced by new documents
+        """
+        try:
+            from .rfm_serializer import serialize_rfm
+            from .rfm_parser import parse_rfm_content
+            from pathlib import Path as _Path
+        except Exception:
+            return
+        keys = list(doc_keys) if doc_keys else list(self.documents_by_key.keys())
+        for base_key in list(keys):
+            base_doc = self.documents_by_key.get(base_key)
+            if not base_doc:
+                continue
+            # Build expanded view honoring current exinclude mode
+            try:
+                base_serial = serialize_rfm(base_doc)
+                eff = parse_rfm_content(
+                    base_serial,
+                    file_path=getattr(base_doc, 'file_path', None),
+                    expand_include=True,
+                    expand_exinclude=True,
+                    exinclude_mode=getattr(self, 'exinclude_mode', 'zero'),
+                    ignore_stm_wrappers=True,
+                )
+            except Exception:
+                eff = None
+            if not eff:
+                continue
+            # Preload each frame.page
+            for fr in list(getattr(eff, 'frames', {}).values()):
+                page_name = getattr(fr, 'page', None)
+                if not page_name:
+                    continue
+                cand = self._resolve_page_candidate_from_base(page_name, base_key)
+                try:
+                    sub_key = str(_Path(cand).resolve())
+                except Exception:
+                    sub_key = str(cand)
+                if sub_key in self.documents_by_key:
+                    continue
+                # Create minimal file if missing
+                if not cand.exists():
+                    try:
+                        cand.parent.mkdir(parents=True, exist_ok=True)
+                        cand.write_text("<stm>\n\n</stm>\n", encoding='utf-8')
+                    except Exception:
+                        continue
+                # Load and register
+                try:
+                    text = cand.read_text(encoding='utf-8', errors='ignore')
+                except Exception:
+                    continue
+                try:
+                    subdoc = parse_rfm_content(text, file_path=str(cand))
+                except Exception:
+                    subdoc = None
+                if subdoc is None:
+                    continue
+                self.documents_by_key[sub_key] = subdoc
+                # Friendly label
+                try:
+                    if getattr(fr, 'name', None):
+                        self.doc_display_names[sub_key] = f"Frame {fr.name} - {_Path(cand).name}"
+                except Exception:
+                    pass
+                # Recurse into the newly loaded doc for standard (non-exinclude) page references
+                try:
+                    self._autopreload_pages(sub_key)
+                except Exception:
+                    pass
 
     def populate_props(self, payload: object) -> None:
         self.props.blockSignals(True)

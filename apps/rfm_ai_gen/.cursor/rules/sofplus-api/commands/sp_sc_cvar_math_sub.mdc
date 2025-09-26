@@ -1,0 +1,23 @@
+---
+description: sp_sc_cvar_math_sub - Subtract value from variable
+alwaysApply: false
+---
+
+### sp_sc_cvar_math_sub
+
+sp_sc_cvar_math_sub
+
+Subtract value from variable
+
+Synopsis:
+
+```txt
+sp_sc_cvar_math_sub
+CVAR
+
+VALUE
+```
+Parameters:
+
+- CVAR:
+- VALUE:

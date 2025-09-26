@@ -1,0 +1,10 @@
+---
+description: _sp_sv_info_client_frames_total - Is set to the number of frames since the client entered the map when the sp_sv_info_client command is executed
+alwaysApply: false
+---
+
+### _sp_sv_info_client_frames_total
+
+_sp_sv_info_client_frames_total
+
+Is set to the number of frames since the client entered the map when the sp_sv_info_client command is executed

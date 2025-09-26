@@ -1,0 +1,15 @@
+---
+description: _sp_sv_vote_maps - Maps to vote for
+alwaysApply: false
+---
+
+### _sp_sv_vote_maps
+
+_sp_sv_vote_maps
+
+Maps to vote for
+
+Values:
+
+- Empty: Use the contents of the maplist `sv_maplist` (default)
+- Not empty: Comma separated list of maps to vote for

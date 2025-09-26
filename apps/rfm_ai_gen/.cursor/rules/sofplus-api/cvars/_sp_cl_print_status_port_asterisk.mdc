@@ -1,0 +1,10 @@
+---
+description: _sp_cl_print_status_port_asterisk - _sp_cl_print_status_port_*
+alwaysApply: false
+---
+
+### _sp_cl_print_status_port_asterisk
+
+_sp_cl_print_status_port_*
+
+Rcon status result. When parsing the response to a `rcon status` command, the result for the port column will be stored in `_sp_cl_print_status_port_0` .. `_sp_cl_print_status_port_31`.

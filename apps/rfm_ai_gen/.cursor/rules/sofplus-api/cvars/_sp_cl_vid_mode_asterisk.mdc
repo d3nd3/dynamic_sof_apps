@@ -1,0 +1,21 @@
+---
+description: _sp_cl_vid_mode_asterisk - _sp_cl_vid_mode_*
+alwaysApply: false
+---
+
+### _sp_cl_vid_mode_asterisk
+
+_sp_cl_vid_mode_*
+
+The variables `_sp_cl_vid_mode_0` .. `_sp_cl_vid_mode_9` define the video modes that will be set when the variable `gl_mode` is set to `0` .. `9`.
+
+Values:
+
+- WIDTH: x
+- HEIGHT: Set the resolution to the specified
+- WIDTH: and
+- HEIGHT: in pixels
+- :DISPLAY:: Set the resolution to match that of your primary display
+- :: DISPLAY NAME
+- :: Set the resolution to match that of the display with
+- DISPLAY NAME: . Your first display will usually be called `DISPLAY1`, your second `DISPLAY2`, etc. When SoF is started with the `+set logfile 3` commandline argument, the names will be written to `SoF.log`

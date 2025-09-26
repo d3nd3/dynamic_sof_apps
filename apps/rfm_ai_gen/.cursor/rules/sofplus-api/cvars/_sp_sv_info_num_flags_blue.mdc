@@ -1,0 +1,10 @@
+---
+description: _sp_sv_info_num_flags_blue - Is set to the number of captured flags for the blue team.
+alwaysApply: false
+---
+
+### _sp_sv_info_num_flags_blue
+
+_sp_sv_info_num_flags_blue
+
+Is set to the number of captured flags for the blue team.

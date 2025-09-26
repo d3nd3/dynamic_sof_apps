@@ -1,0 +1,20 @@
+---
+description: _sp_sv_on_ctf_flag_capture - Contains a comma separated list of function names to be executed when a player caps a flag.
+alwaysApply: false
+---
+
+### _sp_sv_on_ctf_flag_capture
+
+_sp_sv_on_ctf_flag_capture
+
+Contains a comma separated list of function names to be executed when a player caps a flag.
+
+Function arguments:
+
+1
+
+Slot number of client
+
+2
+
+CTF flag carrying state of client

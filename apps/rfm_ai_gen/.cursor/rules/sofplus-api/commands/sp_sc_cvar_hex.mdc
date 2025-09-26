@@ -1,0 +1,25 @@
+---
+description: sp_sc_cvar_hex - Convert cvar contents to a hexadecimal string
+alwaysApply: false
+---
+
+### sp_sc_cvar_hex
+
+sp_sc_cvar_hex
+
+Convert cvar contents to a hexadecimal string
+
+Character codes are replaced by hh, where hh is the hexadecimal value of the character
+
+Synopsis:
+
+```txt
+sp_sc_cvar_hex
+DST CVAR
+
+SRC CVAR
+```
+Parameters:
+
+- DST CVAR:
+- SRC CVAR:

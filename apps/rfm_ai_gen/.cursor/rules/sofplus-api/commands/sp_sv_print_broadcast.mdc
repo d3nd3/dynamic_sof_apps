@@ -1,0 +1,20 @@
+---
+description: sp_sv_print_broadcast - Broadcast a message to all players
+alwaysApply: false
+---
+
+### sp_sv_print_broadcast
+
+sp_sv_print_broadcast
+
+Broadcast a message to all players
+
+Synopsis:
+
+```txt
+sp_sv_print_broadcast
+STRING
+```
+Parameters:
+
+- STRING:

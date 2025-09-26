@@ -1,0 +1,17 @@
+---
+description: cl_showfps - Show framerate (FPS)
+alwaysApply: false
+---
+
+### cl_showfps
+
+cl_showfps
+
+Show framerate (FPS)
+
+Values:
+
+- Bit 0 (1): Print FPS in console
+- Bit 1 (2): Show FPS OSD
+- Bit 2 (4): Show FPS graph. The graph will de drawn if `debuggraph` or `netgraph` or `timegraph` is set to 1. See also _sp_cl_fps_debuggraph_color, _sp_cl_fps_debuggraph_height and _sp_cl_fps_debuggraph_shift.
+- Bit 3 (8): High speed FPS updates

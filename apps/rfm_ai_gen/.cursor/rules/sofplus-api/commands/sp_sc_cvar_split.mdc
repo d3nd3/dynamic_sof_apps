@@ -1,0 +1,29 @@
+---
+description: sp_sc_cvar_split - Split text and store in multiple variables
+alwaysApply: false
+---
+
+### sp_sc_cvar_split
+
+sp_sc_cvar_split
+
+Split text and store in multiple variables
+
+Synopsis:
+
+```txt
+sp_sc_cvar_split
+DST CVAR
+
+SPLIT CHAR
+
+SRC CVAR
+```
+Parameters:
+
+- DST CVAR:
+- DST CVAR: _0`: Number of split parts
+- DST CVAR: _1`: First split part
+- DST CVAR: _n`: Split part n
+- SPLIT CHAR:
+- SRC CVAR:

@@ -1,0 +1,11 @@
+---
+description: RMF layout element <defaults> to set page-wide defaults (borders, tooltips)
+---
+
+### Options
+- `noborder` — turn off borders for following areas.
+- `border <width> <lineWidth> <colour>` — default border for following areas.
+- `tiptint <colour>` — tooltip text colour.
+- `tipbtint <colour>` — tooltip background colour.
+- `tipfont <font>` — tooltip font.
+

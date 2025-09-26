@@ -1,0 +1,10 @@
+---
+description: Undocumented RMF areas <botlist> (view bots) and <bot> (select bot)
+---
+
+### botlist
+Bot viewing list component.
+
+### bot
+Bot selection component.
+

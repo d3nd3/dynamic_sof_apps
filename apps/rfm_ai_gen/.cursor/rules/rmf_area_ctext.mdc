@@ -1,0 +1,11 @@
+---
+description: RMF area <ctext cvar> displays text from a console variable
+---
+
+Like <text> but content comes from a cvar; uses current font/tints unless overridden.
+
+### Example
+```text
+Your GL Driver is <ctext gl_driver>
+```
+

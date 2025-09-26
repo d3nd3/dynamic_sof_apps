@@ -1,0 +1,26 @@
+---
+description: sp_sv_client_check - Read a cvar from a client. The client will respond through the `.check` command.
+alwaysApply: false
+---
+
+### sp_sv_client_check
+
+sp_sv_client_check
+
+Read a cvar from a client. The client will respond through the `.check` command.
+
+Synopsis:
+
+```txt
+sp_sv_client_check
+SLOT
+
+CHALLENGE
+
+CVAR
+```
+Parameters:
+
+- SLOT:
+- CHALLENGE:
+- CVAR:

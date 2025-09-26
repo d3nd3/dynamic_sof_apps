@@ -1,0 +1,14 @@
+---
+description: _sp_sv_vote_num_ratio - Minimum ratio of clients that must vote for the vote to be valid
+alwaysApply: false
+---
+
+### _sp_sv_vote_num_ratio
+
+_sp_sv_vote_num_ratio
+
+Minimum ratio of clients that must vote for the vote to be valid
+
+Values:
+
+- 0.0 .. 1.0: Ratio of clients that must vote (default = 0.5)

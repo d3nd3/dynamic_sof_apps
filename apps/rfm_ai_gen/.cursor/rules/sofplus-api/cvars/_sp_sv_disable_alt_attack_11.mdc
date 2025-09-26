@@ -1,0 +1,15 @@
+---
+description: _sp_sv_disable_alt_attack_11 - Disable alternate attack for weapon 11 (flamethrower)
+alwaysApply: false
+---
+
+### _sp_sv_disable_alt_attack_11
+
+_sp_sv_disable_alt_attack_11
+
+Disable alternate attack for weapon 11 (flamethrower)
+
+Values:
+
+- 0: Not disabled (default)
+- 1: Disabled

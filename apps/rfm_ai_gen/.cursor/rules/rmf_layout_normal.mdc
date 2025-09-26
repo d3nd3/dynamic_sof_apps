@@ -1,0 +1,11 @@
+---
+description: RMF layout element <normal> left-to-right flow with wrapping
+---
+
+Place areas left-to-right until no more fit, then wrap to next line.
+
+### Example
+```text
+<normal>
+```
+

@@ -1,0 +1,15 @@
+---
+description: _sp_sv_string_package_print - Filename of string package. This string package can be used by the sp_sv_print_sp_broadcast and sp_sv_print_sp_client commands. You can add / change strings yourself.
+alwaysApply: false
+---
+
+### _sp_sv_string_package_print
+
+_sp_sv_string_package_print
+
+Filename of string package. This string package can be used by the sp_sv_print_sp_broadcast and sp_sv_print_sp_client commands. You can add / change strings yourself.
+
+Values:
+
+- Empty: String package disabled
+- Not empty: String package enabled

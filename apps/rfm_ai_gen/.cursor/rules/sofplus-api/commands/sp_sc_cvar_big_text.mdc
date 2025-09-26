@@ -1,0 +1,27 @@
+---
+description: sp_sc_cvar_big_text - Create big text
+alwaysApply: false
+---
+
+### sp_sc_cvar_big_text
+
+sp_sc_cvar_big_text
+
+Create big text
+
+Synopsis:
+
+```txt
+sp_sc_cvar_big_text
+DST CVAR
+
+SRC CVAR
+```
+Parameters:
+
+- DST CVAR:
+- DST CVAR: _1`, `
+- DST CVAR: _2`, `
+- DST CVAR: _3` and `
+- DST CVAR: _4`
+- SRC CVAR:

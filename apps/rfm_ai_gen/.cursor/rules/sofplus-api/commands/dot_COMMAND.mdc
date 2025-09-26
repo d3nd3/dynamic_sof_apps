@@ -1,0 +1,21 @@
+---
+description: dot_COMMAND - Server admins can add their own client command functions. The function name must begin with a dot. Optional function arguments can be defined by the admin. See sp_sc_func_exec for more information about functions.
+alwaysApply: false
+---
+
+### dot_COMMAND
+
+.
+COMMAND
+
+Server admins can add their own client command functions. The function name must begin with a dot. Optional function arguments can be defined by the admin. See sp_sc_func_exec for more information about functions.
+
+Function arguments:
+
+1
+
+Slot number of client
+
+2+
+
+Optional extra arguments

@@ -1,0 +1,24 @@
+---
+description: dot_run - Enable always run mode (changes cl_run to 1)
+alwaysApply: false
+---
+
+### dot_run
+
+.run
+
+Enable always run mode (changes cl_run to 1)
+
+Synopsis:
+
+```txt
+.run`
+`.run
+```
+
+Example:
+
+```txt
+].run`
+`].run
+```

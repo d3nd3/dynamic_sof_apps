@@ -1,0 +1,15 @@
+---
+description: _sp_sv_vote_type_control_limit_max - Maximum value for vote type control_limit
+alwaysApply: false
+---
+
+### _sp_sv_vote_type_control_limit_max
+
+_sp_sv_vote_type_control_limit_max
+
+Maximum value for vote type control_limit
+
+Values:
+
+- < _sp_sv_vote_type_control_limit_min: Disable vote type control_limit
+- > 0: Maximum value (default = 999)

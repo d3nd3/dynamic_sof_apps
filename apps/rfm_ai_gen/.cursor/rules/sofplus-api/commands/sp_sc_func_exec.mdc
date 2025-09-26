@@ -1,0 +1,23 @@
+---
+description: sp_sc_func_exec - Execute a function.
+alwaysApply: false
+---
+
+### sp_sc_func_exec
+
+sp_sc_func_exec
+
+Execute a function.
+
+Synopsis:
+
+```txt
+sp_sc_func_exec
+NAME
+
+ARGUMENT...
+```
+Parameters:
+
+- NAME:
+- ARGUMENT:

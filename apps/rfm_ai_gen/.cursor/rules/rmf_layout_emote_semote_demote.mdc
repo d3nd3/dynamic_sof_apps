@@ -1,0 +1,13 @@
+---
+description: RMF layout elements <emote>, <semote>, <demote> for chat/system messages
+---
+
+### emote
+Define a chat emote. Supports %n (name) and %p (parameter).
+
+### semote
+Define a system emote for internal messages.
+
+### demote
+Render an emote example using current font/tints.
+

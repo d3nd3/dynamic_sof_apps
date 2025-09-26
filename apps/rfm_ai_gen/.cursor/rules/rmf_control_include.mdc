@@ -1,0 +1,16 @@
+---
+description: RMF control element <include page> to include another page unconditionally
+---
+
+### Purpose
+Include raw text from another RMF page at this point.
+
+### Notes
+- Supply the page name without extension; `.rmf` is auto-added.
+- The file is resolved relative to `menus/` in game assets.
+
+### Example
+```text
+<include globe>
+```
+

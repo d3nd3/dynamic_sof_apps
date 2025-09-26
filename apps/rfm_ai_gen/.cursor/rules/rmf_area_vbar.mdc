@@ -1,0 +1,11 @@
+---
+description: RMF area <vbar> vertical scrollbar auto-sized to page
+---
+
+Creates a right-side vertical scrollbar. Can react to variable-sized areas.
+
+### Example
+```text
+<vbar tint vbargray>
+```
+

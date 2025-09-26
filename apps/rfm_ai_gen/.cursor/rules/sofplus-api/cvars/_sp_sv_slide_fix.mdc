@@ -1,0 +1,15 @@
+---
+description: _sp_sv_slide_fix - Slide fix
+alwaysApply: false
+---
+
+### _sp_sv_slide_fix
+
+_sp_sv_slide_fix
+
+Slide fix
+
+Values:
+
+- 0: No
+- 1: Yes (default)

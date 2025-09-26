@@ -1,0 +1,10 @@
+---
+description: _sp_cl_print_data - Unconnected print packets (result from rcon commands, serverstatus, echo, ...) will be stored in this variable.
+alwaysApply: false
+---
+
+### _sp_cl_print_data
+
+_sp_cl_print_data
+
+Unconnected print packets (result from rcon commands, serverstatus, echo, ...) will be stored in this variable.

@@ -1,0 +1,15 @@
+---
+description: _sp_sv_vote_type_timelimit_max - Maximum value for vote type timelimit
+alwaysApply: false
+---
+
+### _sp_sv_vote_type_timelimit_max
+
+_sp_sv_vote_type_timelimit_max
+
+Maximum value for vote type timelimit
+
+Values:
+
+- < _sp_sv_vote_type_timelimit_min: Disable vote type timelimit
+- > 0: Maximum value (default = 999)

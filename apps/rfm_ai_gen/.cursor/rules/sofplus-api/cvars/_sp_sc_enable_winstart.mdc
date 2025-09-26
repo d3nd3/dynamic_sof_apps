@@ -1,0 +1,15 @@
+---
+description: _sp_sc_enable_winstart - Winstart enable. Set this variable on the commandline to enable the dangerous winstart command.
+alwaysApply: false
+---
+
+### _sp_sc_enable_winstart
+
+_sp_sc_enable_winstart
+
+Winstart enable. Set this variable on the commandline to enable the dangerous winstart command.
+
+Values:
+
+- 0: Disable (default)
+- 1: Enable

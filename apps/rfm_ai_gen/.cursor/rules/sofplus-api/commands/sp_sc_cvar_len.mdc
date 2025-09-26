@@ -1,0 +1,23 @@
+---
+description: sp_sc_cvar_len - Get string length
+alwaysApply: false
+---
+
+### sp_sc_cvar_len
+
+sp_sc_cvar_len
+
+Get string length
+
+Synopsis:
+
+```txt
+sp_sc_cvar_len
+DST CVAR
+
+SRC CVAR
+```
+Parameters:
+
+- DST CVAR:
+- SRC CVAR:

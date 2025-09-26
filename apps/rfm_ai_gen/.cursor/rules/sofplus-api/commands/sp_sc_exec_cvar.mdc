@@ -1,0 +1,20 @@
+---
+description: sp_sc_exec_cvar - Execute commands from a cvar
+alwaysApply: false
+---
+
+### sp_sc_exec_cvar
+
+sp_sc_exec_cvar
+
+Execute commands from a cvar
+
+Synopsis:
+
+```txt
+sp_sc_exec_cvar
+CVAR
+```
+Parameters:
+
+- CVAR:

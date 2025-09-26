@@ -1,0 +1,15 @@
+---
+description: _sp_sv_ping_max - Maximum ping allowed. Clients whose ping is above the limit will see a warning message. If their ping stays too high, they will eventually be kicked.
+alwaysApply: false
+---
+
+### _sp_sv_ping_max
+
+_sp_sv_ping_max
+
+Maximum ping allowed. Clients whose ping is above the limit will see a warning message. If their ping stays too high, they will eventually be kicked.
+
+Values:
+
+- 0: No limit (default)
+- >0: Use this limit

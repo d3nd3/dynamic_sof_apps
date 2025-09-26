@@ -1,0 +1,16 @@
+---
+description: _sp_sv_say_player - Control `say` behaviour for players
+alwaysApply: false
+---
+
+### _sp_sv_say_player
+
+_sp_sv_say_player
+
+Control `say` behaviour for players
+
+Values:
+
+- 0: Disable
+- 1: Enable (default)
+- 2: Only own team and all spectators. You will see `(-)` to indicate that less people than intended may receive the message.

@@ -1,0 +1,20 @@
+---
+description: sp_sc_cvar_math_sqrt - Calculate square root
+alwaysApply: false
+---
+
+### sp_sc_cvar_math_sqrt
+
+sp_sc_cvar_math_sqrt
+
+Calculate square root
+
+Synopsis:
+
+```txt
+sp_sc_cvar_math_sqrt
+CVAR
+```
+Parameters:
+
+- CVAR:

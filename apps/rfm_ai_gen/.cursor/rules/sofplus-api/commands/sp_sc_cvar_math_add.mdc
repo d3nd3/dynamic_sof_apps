@@ -1,0 +1,23 @@
+---
+description: sp_sc_cvar_math_add - Add value to variable
+alwaysApply: false
+---
+
+### sp_sc_cvar_math_add
+
+sp_sc_cvar_math_add
+
+Add value to variable
+
+Synopsis:
+
+```txt
+sp_sc_cvar_math_add
+CVAR
+
+VALUE
+```
+Parameters:
+
+- CVAR:
+- VALUE:

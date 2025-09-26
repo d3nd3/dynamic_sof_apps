@@ -1,0 +1,12 @@
+---
+description: sv_maplist - Comma separated list of maps to be played.
+alwaysApply: false
+---
+
+### sv_maplist
+
+sv_maplist
+
+Comma separated list of maps to be played.
+
+See also map

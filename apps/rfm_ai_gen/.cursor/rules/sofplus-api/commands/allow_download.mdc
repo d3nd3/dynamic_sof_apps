@@ -1,0 +1,15 @@
+---
+description: allow_download - Allow downloading. Should be set to 1 on client and server, because SoFplus uses custom string packages.
+alwaysApply: false
+---
+
+### allow_download
+
+allow_download
+
+Allow downloading. Should be set to 1 on client and server, because SoFplus uses custom string packages.
+
+Values:
+
+- 0: Downloading not allowed
+- 1: Downloading allowed

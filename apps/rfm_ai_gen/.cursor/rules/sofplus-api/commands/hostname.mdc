@@ -1,0 +1,10 @@
+---
+description: hostname - Server hostname. Some checks have been added to remove characters that can cause clients to crash.
+alwaysApply: false
+---
+
+### hostname
+
+hostname
+
+Server hostname. Some checks have been added to remove characters that can cause clients to crash.

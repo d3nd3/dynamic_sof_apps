@@ -1,0 +1,23 @@
+---
+description: sp_sv_print_client - Send a message to one client
+alwaysApply: false
+---
+
+### sp_sv_print_client
+
+sp_sv_print_client
+
+Send a message to one client
+
+Synopsis:
+
+```txt
+sp_sv_print_client
+SLOT
+
+STRING
+```
+Parameters:
+
+- SLOT:
+- STRING:

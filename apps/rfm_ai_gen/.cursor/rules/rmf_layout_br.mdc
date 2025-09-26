@@ -1,0 +1,11 @@
+---
+description: RMF layout element <br> carriage return resetting layout position rules
+---
+
+Moves to next line based on current font height and resets to top on layout mode changes.
+
+### Example
+```text
+<br>
+```
+

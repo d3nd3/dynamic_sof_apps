@@ -1,0 +1,24 @@
+---
+description: sp_sv_players - Print a list of player stats (clients can use the .players command to get the same output)
+alwaysApply: false
+---
+
+### sp_sv_players
+
+sp_sv_players
+
+Print a list of player stats (clients can use the .players command to get the same output)
+
+Synopsis:
+
+```txt
+sp_sv_players`
+`sp_sv_players
+```
+
+Example:
+
+```txt
+]sp_sv_players`
+`]sp_sv_players
+```

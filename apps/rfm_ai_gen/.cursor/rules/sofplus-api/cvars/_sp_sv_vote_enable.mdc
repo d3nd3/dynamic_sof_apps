@@ -1,0 +1,15 @@
+---
+description: _sp_sv_vote_enable - Disable/enable voting
+alwaysApply: false
+---
+
+### _sp_sv_vote_enable
+
+_sp_sv_vote_enable
+
+Disable/enable voting
+
+Values:
+
+- 0: Disable (default); No voting allowed
+- 1: Enable; Voting allowed, but individual vote types must be enabled too

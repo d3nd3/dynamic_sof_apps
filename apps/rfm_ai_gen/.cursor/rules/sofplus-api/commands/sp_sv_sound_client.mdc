@@ -1,0 +1,22 @@
+---
+description: sp_sv_sound_client - Play a sound file for one client
+alwaysApply: false
+---
+
+### sp_sv_sound_client
+
+sp_sv_sound_client
+
+Play a sound file for one client
+
+Synopsis:
+
+```txt
+sp_sv_sound_client
+SLOT
+
+SOUND FILE INDEX
+```
+Parameters:
+
+- SLOT:

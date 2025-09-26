@@ -1,0 +1,10 @@
+---
+description: _sp_sv_info_client_team - Is set to the clients team when the sp_sv_info_client command is executed
+alwaysApply: false
+---
+
+### _sp_sv_info_client_team
+
+_sp_sv_info_client_team
+
+Is set to the clients team when the sp_sv_info_client command is executed

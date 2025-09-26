@@ -1,0 +1,10 @@
+---
+description: _sp_cl_print_status_lastmsg_asterisk - _sp_cl_print_status_lastmsg_*
+alwaysApply: false
+---
+
+### _sp_cl_print_status_lastmsg_asterisk
+
+_sp_cl_print_status_lastmsg_*
+
+Rcon status result. When parsing the response to a `rcon status` command, the result for the lastmsg column will be stored in `_sp_cl_print_status_lastmsg_0` .. `_sp_cl_print_status_lastmsg_31`.

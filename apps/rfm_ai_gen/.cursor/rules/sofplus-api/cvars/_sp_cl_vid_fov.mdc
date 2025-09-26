@@ -1,0 +1,16 @@
+---
+description: _sp_cl_vid_fov - Horizontal / vertical FOV
+alwaysApply: false
+---
+
+### _sp_cl_vid_fov
+
+_sp_cl_vid_fov
+
+Horizontal / vertical FOV
+
+Values:
+
+- 0: Horizontal FOV locked at 95. Vertical FOV will automatically be adjusted for the display aspect ratio.
+- 1: Vertical FOV locked at 79 (default). Horizontal FOV will automatically be adjusted for the display aspect ratio.
+- 90 .. 111: Horizontal FOV set at specified value. Vertical FOV will automatically be adjusted for the display aspect ratio.

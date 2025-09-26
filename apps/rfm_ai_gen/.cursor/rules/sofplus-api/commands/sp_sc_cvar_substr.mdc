@@ -1,0 +1,29 @@
+---
+description: sp_sc_cvar_substr - Get a substring from a cvar
+alwaysApply: false
+---
+
+### sp_sc_cvar_substr
+
+sp_sc_cvar_substr
+
+Get a substring from a cvar
+
+Synopsis:
+
+```txt
+sp_sc_cvar_substr
+DST CVAR
+
+SRC CVAR
+
+START
+
+LENGTH
+```
+Parameters:
+
+- DST CVAR:
+- SRC CVAR:
+- START:
+- LENGTH:

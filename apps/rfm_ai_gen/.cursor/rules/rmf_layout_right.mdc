@@ -1,0 +1,11 @@
+---
+description: RMF layout element <right> right-to-left flow from right edge
+---
+
+Place subsequent areas starting at right edge moving left.
+
+### Example
+```text
+<right>
+```
+

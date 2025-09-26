@@ -1,0 +1,17 @@
+---
+description: _sp_sv_ac_mode - Anti-cheat mode (reserved for a future anti-cheat). To see who is using an anti-cheat, use the .players or sp_sv_players command.
+alwaysApply: false
+---
+
+### _sp_sv_ac_mode
+
+_sp_sv_ac_mode
+
+Anti-cheat mode (reserved for a future anti-cheat). To see who is using an anti-cheat, use the .players or sp_sv_players command.
+
+Values:
+
+- 0: Off (default)
+- 1: On; Players without anti-cheat are kicked.
+- 2: On; Players without anti-cheat aren't kicked, but they do see a link to the download site.
+- 3: On; Players without anti-cheat aren't kicked (default).

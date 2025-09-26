@@ -1,0 +1,15 @@
+---
+description: _sp_sv_vote_type_fraglimit_max - Maximum value for vote type fraglimit
+alwaysApply: false
+---
+
+### _sp_sv_vote_type_fraglimit_max
+
+_sp_sv_vote_type_fraglimit_max
+
+Maximum value for vote type fraglimit
+
+Values:
+
+- < _sp_sv_vote_type_fraglimit_min: Disable vote type fraglimit
+- > 0: Maximum value (default = 999)

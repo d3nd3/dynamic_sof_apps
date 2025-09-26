@@ -1,0 +1,10 @@
+---
+description: _sp_cl_info_skins_skin_asterisk - _sp_cl_info_skins_skin_*
+alwaysApply: false
+---
+
+### _sp_cl_info_skins_skin_asterisk
+
+_sp_cl_info_skins_skin_*
+
+The variables `_sp_cl_info_skins_skin_0` .. `_sp_cl_info_skins_skin_31` are set when the sp_cl_info_skins command is executed.

@@ -1,0 +1,20 @@
+---
+description: dot_vote_ctf_loops - .vote ctf_loops
+alwaysApply: false
+---
+
+### dot_vote_ctf_loops
+
+.vote ctf_loops
+
+Start a vote to change the ctf_loops
+
+Synopsis:
+
+```txt
+.vote ctf_loops
+CTF_LOOPS
+```
+Parameters:
+
+- CTF_LOOPS:

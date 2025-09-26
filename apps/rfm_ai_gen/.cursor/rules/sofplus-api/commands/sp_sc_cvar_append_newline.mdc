@@ -1,0 +1,20 @@
+---
+description: sp_sc_cvar_append_newline - Add a newline character to a cvar
+alwaysApply: false
+---
+
+### sp_sc_cvar_append_newline
+
+sp_sc_cvar_append_newline
+
+Add a newline character to a cvar
+
+Synopsis:
+
+```txt
+sp_sc_cvar_append_newline
+CVAR
+```
+Parameters:
+
+- CVAR:

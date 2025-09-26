@@ -1,0 +1,10 @@
+---
+description: _sp_sc_info_time_datetime - Is set to the current date and time (yyyy-mm-dd hh:mm:ss) when the sp_sc_info_time command is executed
+alwaysApply: false
+---
+
+### _sp_sc_info_time_datetime
+
+_sp_sc_info_time_datetime
+
+Is set to the current date and time (yyyy-mm-dd hh:mm:ss) when the sp_sc_info_time command is executed.

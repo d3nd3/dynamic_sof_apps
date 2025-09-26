@@ -1,0 +1,15 @@
+---
+description: _sp_sv_spectator_team - Force spectators to view only their own team
+alwaysApply: false
+---
+
+### _sp_sv_spectator_team
+
+_sp_sv_spectator_team
+
+Force spectators to view only their own team
+
+Values:
+
+- 0: No (default)
+- 1: Yes

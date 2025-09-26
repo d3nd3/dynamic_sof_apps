@@ -1,0 +1,15 @@
+---
+description: _sp_sv_skin_red - Force skin name for all members of the red team
+alwaysApply: false
+---
+
+### _sp_sv_skin_red
+
+_sp_sv_skin_red
+
+Force skin name for all members of the red team
+
+Values:
+
+- Empty: No forced skin name (default)
+- Not empty: Force this skin name

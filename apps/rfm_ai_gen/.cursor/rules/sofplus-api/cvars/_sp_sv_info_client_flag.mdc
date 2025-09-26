@@ -1,0 +1,16 @@
+---
+description: _sp_sv_info_client_flag - Is set to the clients flag carrying state when the sp_sv_info_client command is executed
+alwaysApply: false
+---
+
+### _sp_sv_info_client_flag
+
+_sp_sv_info_client_flag
+
+Is set to the clients flag carrying state when the sp_sv_info_client command is executed
+
+Values:
+
+- 0: Client isn't carrying a flag
+- 1: Client is carrying the blue flag
+- 2: Client is carrying the red flag

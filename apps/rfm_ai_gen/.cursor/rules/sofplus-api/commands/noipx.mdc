@@ -1,0 +1,15 @@
+---
+description: noipx - Disable IPX
+alwaysApply: false
+---
+
+### noipx
+
+noipx
+
+Disable IPX
+
+Values:
+
+- 0: Enable IPX
+- 1: Disable IPX (default)

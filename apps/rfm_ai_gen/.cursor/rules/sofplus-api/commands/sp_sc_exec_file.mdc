@@ -1,0 +1,20 @@
+---
+description: sp_sc_exec_file - Execute a script. This command is similar to the `exec` command, but it will not echo a message to the console. This command was added, because the console got filled with 'execing ...' messages when doing recursive execs.
+alwaysApply: false
+---
+
+### sp_sc_exec_file
+
+sp_sc_exec_file
+
+Execute a script. This command is similar to the `exec` command, but it will not echo a message to the console. This command was added, because the console got filled with 'execing ...' messages when doing recursive execs.
+
+Synopsis:
+
+```txt
+sp_sc_exec_file
+FILENAME
+```
+Parameters:
+
+- FILENAME:

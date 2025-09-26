@@ -1,0 +1,16 @@
+---
+description: map - The '\' character will be replaced by '/' because it will cause trouble in the server list.
+alwaysApply: false
+---
+
+### map
+
+map
+
+The '\' character will be replaced by '/' because it will cause trouble in the server list.
+
+Map names can be prefixed with text and a colon:
+PREFIX
+`:`
+MAPNAME
+. The prefix can be used in the _sp_sv_on_map_rotate event.

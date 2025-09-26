@@ -1,0 +1,24 @@
+---
+description: dot_yes - Vote yes
+alwaysApply: false
+---
+
+### dot_yes
+
+.yes
+
+Vote yes
+
+Synopsis:
+
+```txt
+.yes`
+`.yes
+```
+
+Example:
+
+```txt
+].yes`
+`].yes
+```

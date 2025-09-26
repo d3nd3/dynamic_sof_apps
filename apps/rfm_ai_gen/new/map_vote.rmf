@@ -1,0 +1,38 @@
+<stm>
+  <key escape "popmenu">
+  <cursor 1>
+
+  <defaults border 6 1 0xffffffff>
+
+  <center>
+  <font type title>
+  <text "MAP VOTE">
+  <hr>
+
+  <left>
+  <font type medium>
+  <text "Select a map:">
+  <hbr>
+  <tab 320>
+  <filebox "maps" "*/*" "bsp" sort name talign left cvar vote_map width 280 height 360>
+
+  <blank 24 1>
+
+  <font type medium>
+  <text "Preview:" tab>
+  <hbr>
+  <image misc/map_preview_placeholder setimage ui_map_preview scale 0.5 tab>
+
+  <hbr>
+  <text "Selected:" tab> <ctext vote_map>
+
+  <hbr>
+  <text "VOTE" key mouse1 "cbuf \".vote map $vote_map\"" tab>
+  <hbr>
+  <text "BACK" key mouse1 "popmenu">
+
+  <alias ui_update_map_preview "sp_sc_flow_if text $vote_map != \"\" { sp_sc_cvar_sset ui_map_preview mapshots/ #vote_map } { sp_sc_cvar_sset ui_map_preview misc/ map_preview_placeholder }; refresh">
+  <cbuf "sp_sc_on_change vote_map ui_update_map_preview; ui_update_map_preview">
+</stm>
+
+

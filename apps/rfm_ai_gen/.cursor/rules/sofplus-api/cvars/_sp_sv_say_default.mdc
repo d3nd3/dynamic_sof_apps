@@ -1,0 +1,15 @@
+---
+description: _sp_sv_say_default - Use say by default when a client didn't use say or say_team when typing something in his console
+alwaysApply: false
+---
+
+### _sp_sv_say_default
+
+_sp_sv_say_default
+
+Use say by default when a client didn't use say or say_team when typing something in his console
+
+Values:
+
+- 0: No
+- 1: Yes (default)

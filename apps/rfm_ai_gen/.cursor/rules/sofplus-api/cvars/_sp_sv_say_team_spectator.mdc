@@ -1,0 +1,15 @@
+---
+description: _sp_sv_say_team_spectator - Control `say_team` behaviour for spectators
+alwaysApply: false
+---
+
+### _sp_sv_say_team_spectator
+
+_sp_sv_say_team_spectator
+
+Control `say_team` behaviour for spectators
+
+Values:
+
+- 0: Disable
+- 1: Enable (default)

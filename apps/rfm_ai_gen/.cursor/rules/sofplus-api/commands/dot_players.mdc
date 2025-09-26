@@ -1,0 +1,24 @@
+---
+description: dot_players - Display player info (somewhat similar to players and rcon status)
+alwaysApply: false
+---
+
+### dot_players
+
+.players
+
+Display player info (somewhat similar to players and rcon status)
+
+Synopsis:
+
+```txt
+.players`
+`.players
+```
+
+Example:
+
+```txt
+].players`
+`].players
+```

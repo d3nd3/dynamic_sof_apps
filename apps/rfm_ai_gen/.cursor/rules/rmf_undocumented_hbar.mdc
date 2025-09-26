@@ -1,0 +1,13 @@
+---
+description: Undocumented RMF element <hbar> progress/loading bar (invisible when zero)
+---
+
+Horizontal progress bar used for loading UI. Typical form:
+```text
+<hbar BACKGROUND BAR_ITEM cvar PROGRESS_CVAR invisible>
+```
+- `BACKGROUND` — background image key
+- `BAR_ITEM` — bar/segment image key
+- `cvar <name>` — progress cvar expected to go from 0 -> 1
+- `invisible` — hide object when progress is 0
+

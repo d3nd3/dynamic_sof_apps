@@ -1,0 +1,10 @@
+---
+description: _sp_sv_sound_2m - The variable can point to a custom sound file that will be played on the clients when 2 minutes remain
+alwaysApply: false
+---
+
+### _sp_sv_sound_2m
+
+_sp_sv_sound_2m
+
+The variable can point to a custom sound file that will be played on the clients when 2 minutes remain

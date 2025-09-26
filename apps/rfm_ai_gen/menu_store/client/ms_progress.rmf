@@ -1,0 +1,11 @@
+<stm>
+  <frame default 640 64>
+  <defaults border 0 0 0xff000000>
+  <left>
+  <font type medium>
+  <text "Menu Install" tint 0xffffffff>
+  <hbr>
+  <hbar "misc/l_clip" "misc/l_bullet" cvar _ms_rx_progress invisible>
+</stm>
+
+

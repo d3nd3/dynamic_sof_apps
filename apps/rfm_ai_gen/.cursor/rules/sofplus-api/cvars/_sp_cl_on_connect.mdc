@@ -1,0 +1,10 @@
+---
+description: _sp_cl_on_connect - Contains a comma separated list of function names to be executed when the connect command is executed.
+alwaysApply: false
+---
+
+### _sp_cl_on_connect
+
+_sp_cl_on_connect
+
+Contains a comma separated list of function names to be executed when the connect command is executed.

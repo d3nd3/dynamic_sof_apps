@@ -1,0 +1,24 @@
+---
+description: sp_sc_alias - Create an alias. This command is similar to the `alias` command, but with `sp_sc_alias` you can use arguments.
+alwaysApply: false
+---
+
+### sp_sc_alias
+
+sp_sc_alias
+
+Create an alias. This command is similar to the `alias` command, but with `sp_sc_alias` you can use arguments.
+
+Synopsis:
+
+```txt
+sp_sc_alias
+NAME
+
+COMMAND
+```
+Parameters:
+
+- NAME:
+- COMMAND:
+- NAME: `)

@@ -1,0 +1,28 @@
+---
+description: _sp_sv_on_client_die - Contains a comma separated list of function names to be executed when a player dies.
+alwaysApply: false
+---
+
+### _sp_sv_on_client_die
+
+_sp_sv_on_client_die
+
+Contains a comma separated list of function names to be executed when a player dies.
+
+Function arguments:
+
+1
+
+Slot number of victim, or -99 if no victim
+
+2
+
+Slot number of killer, or -99 of no killer
+
+3
+
+Means of death. If bit 28 of this number is set, it's a teamkill.
+
+4
+
+CTF flag carrying state of victim

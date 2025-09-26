@@ -1,0 +1,15 @@
+---
+description: _sp_sv_log_stats - Log statistics to the server console and `sof.log
+alwaysApply: false
+---
+
+### _sp_sv_log_stats
+
+_sp_sv_log_stats
+
+Log statistics to the server console and `sof.log`
+
+Values:
+
+- 0: Don't log (default)
+- 1: Log

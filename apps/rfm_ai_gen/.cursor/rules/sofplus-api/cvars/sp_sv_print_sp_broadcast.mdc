@@ -1,0 +1,24 @@
+---
+description: sp_sv_print_sp_broadcast - Broadcast a message to all players
+alwaysApply: false
+---
+
+### sp_sv_print_sp_broadcast
+
+sp_sv_print_sp_broadcast
+
+Broadcast a message to all players
+
+Synopsis:
+
+```txt
+sp_sv_print_sp_broadcast
+SP INDEX
+ [
+STRING...
+]
+```
+Parameters:
+
+- SP INDEX:
+- STRING...:

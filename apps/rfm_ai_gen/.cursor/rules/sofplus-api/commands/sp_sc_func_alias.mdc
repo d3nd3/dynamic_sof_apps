@@ -1,0 +1,25 @@
+---
+description: sp_sc_func_alias - Create an alias for a function which can be used instead of `sp_sc_func_exec
+alwaysApply: false
+---
+
+### sp_sc_func_alias
+
+sp_sc_func_alias
+
+Create an alias for a function which can be used instead of `sp_sc_func_exec
+FUNCTION
+`.
+
+Synopsis:
+
+```txt
+sp_sc_func_alias
+NAME
+
+FUNCTION
+```
+Parameters:
+
+- NAME:
+- FUNCTION:

@@ -1,0 +1,10 @@
+---
+description: _sp_sv_info_client_deaths - Is set to the clients number of deaths when the sp_sv_info_client command is executed. This number may be off a bit, because some suicides aren't counted.
+alwaysApply: false
+---
+
+### _sp_sv_info_client_deaths
+
+_sp_sv_info_client_deaths
+
+Is set to the clients number of deaths when the sp_sv_info_client command is executed. This number may be off a bit, because some suicides aren't counted.

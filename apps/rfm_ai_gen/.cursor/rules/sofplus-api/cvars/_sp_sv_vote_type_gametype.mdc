@@ -1,0 +1,23 @@
+---
+description: _sp_sv_vote_type_gametype - Vote type gametype. Allowed gametypes.
+alwaysApply: false
+---
+
+### _sp_sv_vote_type_gametype
+
+_sp_sv_vote_type_gametype
+
+Vote type gametype. Allowed gametypes.
+
+Values:
+
+- Bit 0 (1): DM (Deathmatch)
+- Bit 1 (2): Assassin
+- Bit 2 (4): Arsenal
+- Bit 3 (8): CTF (Capture The Flag)
+- Bit 4 (16): Realistic
+- Bit 5 (32): Control
+- Bit 6 (64): CTB (Conquer The Bunker)
+- Bit 7 (128): Team DM
+- Bit 8 (256): Team Realistic
+- Bit 9 (512): Red/Blue CTB

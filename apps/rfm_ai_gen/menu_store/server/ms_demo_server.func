@@ -1,0 +1,21 @@
+// Demo: send a tiny single-chunk function payload to a target slot
+// Usage: set _ms_tx_slot <slot>; sp_sc_func_exec ms_demo_send
+
+function ms_demo_send( )
+{
+  // A tiny func that sets a cvar and saves it
+  set ~payload "set demo_installed 1; set demo_note proof; sp_sc_cvar_save menus/_ms_demo_installed.cfg demo_installed demo_note"
+
+  set _ms_tx_type func
+  set _ms_tx_name demo
+  set _ms_tx_chunk_size 128
+  set _ms_tx_timer_ms 100
+
+  // Provide raw payload to transport; server transport will escape and add header
+  set _ms_tx_data #~payload
+
+  sp_sc_func_exec ms_transport_server_init
+  sp_sc_func_exec ms_tx_begin
+}
+
+

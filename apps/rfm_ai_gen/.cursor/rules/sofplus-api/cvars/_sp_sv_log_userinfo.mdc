@@ -1,0 +1,15 @@
+---
+description: _sp_sv_log_userinfo - Log userinfo to `user/sofplus/log/userinfo.log
+alwaysApply: false
+---
+
+### _sp_sv_log_userinfo
+
+_sp_sv_log_userinfo
+
+Log userinfo to `user/sofplus/log/userinfo.log`
+
+Values:
+
+- 0: Don't log (default)
+- 1: Log

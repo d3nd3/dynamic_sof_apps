@@ -1,0 +1,15 @@
+---
+description: _sp_sv_rate_max - Maximum rate allowed. If a client has set his rate higher, the server will use the set maximum instead.
+alwaysApply: false
+---
+
+### _sp_sv_rate_max
+
+_sp_sv_rate_max
+
+Maximum rate allowed. If a client has set his rate higher, the server will use the set maximum instead.
+
+Values:
+
+- 0: No limit (default)
+- >0: Use this limit

@@ -1,0 +1,11 @@
+---
+description: RMF layout element <cursor value> to choose cursor style per frame
+---
+
+Values: `0` no cursor, `1` standard cursor.
+
+### Example
+```text
+<cursor 0>
+```
+

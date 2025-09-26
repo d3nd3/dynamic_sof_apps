@@ -1,0 +1,108 @@
+---
+description: _sp_sv_on_client_disconnect - Contains a comma separated list of function names to be executed when a player disconnects.
+alwaysApply: false
+---
+
+### _sp_sv_on_client_disconnect
+
+_sp_sv_on_client_disconnect
+
+Contains a comma separated list of function names to be executed when a player disconnects.
+
+Function arguments:
+
+1
+
+Slot number of client
+
+2
+
+Anti-cheat state
+
+3
+
+Country code
+
+4
+
+Number of deaths
+
+5
+
+Flag carrying state
+
+6
+
+Number of captured flags
+
+7
+
+Number of recovered flags
+
+8
+
+Framerate
+
+9
+
+Number of frags
+
+10
+
+Number of frames since last active
+
+11
+
+Number of frames since entering the map
+
+12
+
+Anti-cheat guid
+
+13
+
+IP address
+
+14
+
+Name
+
+15
+
+Ping
+
+16
+
+Best number of points per minute
+
+17
+
+Current number of points per minute
+
+18
+
+Score
+
+19
+
+Skin
+
+20
+
+Spectator state
+
+21
+
+Number of suicides
+
+22
+
+Team
+
+23
+
+Number of teamkills
+
+24
+
+Teamname

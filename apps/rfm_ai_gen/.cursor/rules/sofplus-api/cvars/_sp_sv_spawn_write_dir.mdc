@@ -1,0 +1,19 @@
+---
+description: _sp_sv_spawn_write_dir - Directory to write map spawn info to. SoF will try writing to `user/sofplus/sv/spawn/
+alwaysApply: false
+---
+
+### _sp_sv_spawn_write_dir
+
+_sp_sv_spawn_write_dir
+
+Directory to write map spawn info to. SoF will try writing to `user/sofplus/sv/spawn/
+WRITE DIR
+/
+MAPNAME
+.txt`. Note that the slash in map names stays in the pathname too.
+
+Values:
+
+- Empty: Don't write map spawn info (default)
+- Not empty: Try writing map spawn info

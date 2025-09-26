@@ -1,0 +1,23 @@
+---
+description: sp_sc_cvar_copy_latched - Copy latched cvar(s)
+alwaysApply: false
+---
+
+### sp_sc_cvar_copy_latched
+
+sp_sc_cvar_copy_latched
+
+Copy latched cvar(s)
+
+Synopsis:
+
+```txt
+sp_sc_cvar_copy_latched
+DST CVAR
+
+SRC CVAR...
+```
+Parameters:
+
+- DST CVAR:
+- SRC CVAR...:

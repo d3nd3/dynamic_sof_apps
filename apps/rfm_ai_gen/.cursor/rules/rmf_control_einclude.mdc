@@ -1,0 +1,12 @@
+---
+description: RMF control element <einclude cvar value page> include if cvar equals value
+---
+
+### Purpose
+Include another page when a cvar exactly matches a value.
+
+### Example
+```text
+<einclude mapname sib1 sib1mission>
+```
+

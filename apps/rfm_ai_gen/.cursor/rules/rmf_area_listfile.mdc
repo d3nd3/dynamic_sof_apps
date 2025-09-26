@@ -1,0 +1,6 @@
+---
+description: RMF area <listfile cvar> view/select items from a maplist file
+---
+
+Displays the contents of a maplist file and allows selecting one item.
+

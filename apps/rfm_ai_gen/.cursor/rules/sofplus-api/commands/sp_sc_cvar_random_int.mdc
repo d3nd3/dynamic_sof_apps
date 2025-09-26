@@ -1,0 +1,26 @@
+---
+description: sp_sc_cvar_random_int - Generate a random integer
+alwaysApply: false
+---
+
+### sp_sc_cvar_random_int
+
+sp_sc_cvar_random_int
+
+Generate a random integer
+
+Synopsis:
+
+```txt
+sp_sc_cvar_random_int
+CVAR
+
+MIN VALUE
+
+MAX VALUE
+```
+Parameters:
+
+- CVAR:
+- MIN VALUE:
+- MAX VALUE:

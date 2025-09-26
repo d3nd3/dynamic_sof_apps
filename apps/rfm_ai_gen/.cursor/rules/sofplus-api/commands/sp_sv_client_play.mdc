@@ -1,0 +1,20 @@
+---
+description: sp_sv_client_play - Force client into player mode. The `spectator` and `password` cvars will be set.
+alwaysApply: false
+---
+
+### sp_sv_client_play
+
+sp_sv_client_play
+
+Force client into player mode. The `spectator` and `password` cvars will be set.
+
+Synopsis:
+
+```txt
+sp_sv_client_play
+SLOT|*
+```
+Parameters:
+
+- SLOT|*:

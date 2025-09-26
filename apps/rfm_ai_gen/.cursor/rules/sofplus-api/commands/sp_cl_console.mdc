@@ -1,0 +1,20 @@
+---
+description: sp_cl_console - Turn console on or off. You can use `toggleconsole` to turn the console on when it's off or off when it's on.
+alwaysApply: false
+---
+
+### sp_cl_console
+
+sp_cl_console
+
+Turn console on or off. You can use `toggleconsole` to turn the console on when it's off or off when it's on.
+
+Synopsis:
+
+```txt
+sp_cl_console
+ACTION
+```
+Parameters:
+
+- ACTION:

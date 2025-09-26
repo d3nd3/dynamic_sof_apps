@@ -1,0 +1,14 @@
+---
+description: _sp_sv_vote_type_fraglimit_min - Minimum value for vote type fraglimit
+alwaysApply: false
+---
+
+### _sp_sv_vote_type_fraglimit_min
+
+_sp_sv_vote_type_fraglimit_min
+
+Minimum value for vote type fraglimit
+
+Values:
+
+- > 0: Minimum value (default = 1)

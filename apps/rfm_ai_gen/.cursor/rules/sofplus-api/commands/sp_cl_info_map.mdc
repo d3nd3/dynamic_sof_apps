@@ -1,0 +1,28 @@
+---
+description: sp_cl_info_map - Write info to `_sp_cl_info_*` cvars
+alwaysApply: false
+---
+
+### sp_cl_info_map
+
+sp_cl_info_map
+
+Write info to `_sp_cl_info_*` cvars
+
+The current map
+
+_sp_cl_info_map
+
+Synopsis:
+
+```txt
+sp_cl_info_map`
+`sp_cl_info_map
+```
+
+Example:
+
+```txt
+]sp_cl_info_map`
+`]sp_cl_info_map
+```

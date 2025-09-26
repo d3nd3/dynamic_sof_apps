@@ -1,0 +1,15 @@
+---
+description: _sp_sv_disable_primary_attack_2 - Disable primary attack for weapon 2 (pistol)
+alwaysApply: false
+---
+
+### _sp_sv_disable_primary_attack_2
+
+_sp_sv_disable_primary_attack_2
+
+Disable primary attack for weapon 2 (pistol)
+
+Values:
+
+- 0: Not disabled (default)
+- 1: Disabled

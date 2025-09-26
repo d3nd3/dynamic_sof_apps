@@ -1,0 +1,15 @@
+---
+description: _sp_sv_sound - Custom sounds
+alwaysApply: false
+---
+
+### _sp_sv_sound
+
+_sp_sv_sound
+
+Custom sounds
+
+Values:
+
+- 0: No (default)
+- 1: Yes

@@ -1,0 +1,28 @@
+---
+description: _sp_sv_info_client_ac - Is set to the clients anti-cheat state when the sp_sv_info_client command is executed
+alwaysApply: false
+---
+
+### _sp_sv_info_client_ac
+
+_sp_sv_info_client_ac
+
+Is set to the clients anti-cheat state when the sp_sv_info_client command is executed
+
+Values:
+
+Yes
+
+The client is using anti-cheat
+
+No
+
+The client isn't using anti-cheat
+
+?
+
+The client has been in the server for less than 1 minute. Anti-cheat state is not yet known.
+
+-
+
+Anti-cheat isn't active on the server

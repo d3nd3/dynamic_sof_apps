@@ -1,0 +1,20 @@
+---
+description: dot_vote_map - .vote map
+alwaysApply: false
+---
+
+### dot_vote_map
+
+.vote map
+
+Start a vote to change to another map
+
+Synopsis:
+
+```txt
+.vote map
+MAP
+```
+Parameters:
+
+- MAP:

@@ -1,0 +1,16 @@
+---
+description: _sp_sv_on_client_begin - Contains a comma separated list of function names to be executed when a client finishes loading the map.
+alwaysApply: false
+---
+
+### _sp_sv_on_client_begin
+
+_sp_sv_on_client_begin
+
+Contains a comma separated list of function names to be executed when a client finishes loading the map.
+
+Function arguments:
+
+1
+
+Slot number of client

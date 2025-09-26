@@ -1,0 +1,15 @@
+---
+description: _sp_sv_vote_type_map - Vote type map disable/enable
+alwaysApply: false
+---
+
+### _sp_sv_vote_type_map
+
+_sp_sv_vote_type_map
+
+Vote type map disable/enable
+
+Values:
+
+- 0: Disable
+- 1: Enable (default)

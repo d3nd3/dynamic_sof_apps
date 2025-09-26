@@ -1,0 +1,19 @@
+---
+description: cl_violence - Violence settings.
+alwaysApply: false
+---
+
+### cl_violence
+
+cl_violence
+
+Violence settings.
+
+Values:
+
+- Bit 0 (1): lock_deaths
+- Bit 1 (2): lock_blood
+- Bit 2 (4): lock_gorezones
+- Bit 3 (8): lock_sever
+- Bit 4 (16): lock_textures
+- Bit 5 (32): lock_pure

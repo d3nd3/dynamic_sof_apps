@@ -1,0 +1,16 @@
+---
+description: _sp_sv_on_client_userinfo_change - Contains a comma separated list of function names to be executed when a client changes a user cvar.
+alwaysApply: false
+---
+
+### _sp_sv_on_client_userinfo_change
+
+_sp_sv_on_client_userinfo_change
+
+Contains a comma separated list of function names to be executed when a client changes a user cvar.
+
+Function arguments:
+
+1
+
+Slot number of client

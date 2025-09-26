@@ -1,0 +1,20 @@
+---
+description: sp_sc_cvar_list - Display a list of cvars
+alwaysApply: false
+---
+
+### sp_sc_cvar_list
+
+sp_sc_cvar_list
+
+Display a list of cvars
+
+Synopsis:
+
+```txt
+sp_sc_cvar_list
+CVAR...
+```
+Parameters:
+
+- CVAR:

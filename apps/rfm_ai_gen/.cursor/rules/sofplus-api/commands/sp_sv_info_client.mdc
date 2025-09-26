@@ -1,0 +1,20 @@
+---
+description: sp_sv_info_client - Get client information and put it in the `_sp_sv_info_client_*` variables
+alwaysApply: false
+---
+
+### sp_sv_info_client
+
+sp_sv_info_client
+
+Get client information and put it in the `_sp_sv_info_client_*` variables
+
+Synopsis:
+
+```txt
+sp_sv_info_client
+SLOT
+```
+Parameters:
+
+- SLOT:

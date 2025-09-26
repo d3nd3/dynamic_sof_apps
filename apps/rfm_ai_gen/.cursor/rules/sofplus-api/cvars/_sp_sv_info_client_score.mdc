@@ -1,0 +1,10 @@
+---
+description: _sp_sv_info_client_score - Is set to the clients score when the sp_sv_info_client command is executed
+alwaysApply: false
+---
+
+### _sp_sv_info_client_score
+
+_sp_sv_info_client_score
+
+Is set to the clients score when the sp_sv_info_client command is executed

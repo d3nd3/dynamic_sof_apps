@@ -1,0 +1,10 @@
+---
+description: _sp_sv_info_map_current - Is set to the current map name
+alwaysApply: false
+---
+
+### _sp_sv_info_map_current
+
+_sp_sv_info_map_current
+
+Is set to the current map name

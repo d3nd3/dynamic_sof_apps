@@ -1,0 +1,11 @@
+---
+description: RMF area <filebox root base ext> file list selector
+---
+
+Displays files from a directory; base and ext are filtered; only base shown.
+
+### Options
+- `backfill <colour>` — background colour.
+- `sort <name|rname|size|rsize|time|rtime>` — sort order.
+- `talign <left|right|center>` — text alignment.
+

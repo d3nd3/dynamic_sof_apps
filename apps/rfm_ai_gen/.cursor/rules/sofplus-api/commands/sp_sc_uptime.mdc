@@ -1,0 +1,24 @@
+---
+description: sp_sc_uptime - Print uptime info
+alwaysApply: false
+---
+
+### sp_sc_uptime
+
+sp_sc_uptime
+
+Print uptime info
+
+Synopsis:
+
+```txt
+sp_sc_uptime`
+`sp_sc_uptime
+```
+
+Example:
+
+```txt
+]sp_sc_uptime`
+`]sp_sc_uptime
+```

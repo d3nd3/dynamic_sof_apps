@@ -1,0 +1,10 @@
+---
+description: _sp_sv_info_client_fps - Is set to the clients framerate when the sp_sv_info_client command is executed
+alwaysApply: false
+---
+
+### _sp_sv_info_client_fps
+
+_sp_sv_info_client_fps
+
+Is set to the clients framerate when the sp_sv_info_client command is executed

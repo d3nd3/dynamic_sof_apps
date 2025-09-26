@@ -1,0 +1,24 @@
+---
+description: dot_kill - Commit suicide. This may be usefull when you're stuck and don't have console available.
+alwaysApply: false
+---
+
+### dot_kill
+
+.kill
+
+Commit suicide. This may be usefull when you're stuck and don't have console available.
+
+Synopsis:
+
+```txt
+.kill`
+`.kill
+```
+
+Example:
+
+```txt
+].kill`
+`].kill
+```

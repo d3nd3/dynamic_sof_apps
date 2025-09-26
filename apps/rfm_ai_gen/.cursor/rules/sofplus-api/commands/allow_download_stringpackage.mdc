@@ -1,0 +1,15 @@
+---
+description: allow_download_stringpackage - Allow downloading. Should be set to 1 on client and server, because SoFplus uses custom string packages.
+alwaysApply: false
+---
+
+### allow_download_stringpackage
+
+allow_download_stringpackage
+
+Allow downloading. Should be set to 1 on client and server, because SoFplus uses custom string packages.
+
+Values:
+
+- 0: Downloading not allowed
+- 1: Downloading allowed

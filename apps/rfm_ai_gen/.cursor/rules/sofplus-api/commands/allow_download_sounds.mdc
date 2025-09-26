@@ -1,0 +1,15 @@
+---
+description: allow_download_sounds - Allow downloading. Should be set to 1 on client and server, because SoFplus uses custom sounds.
+alwaysApply: false
+---
+
+### allow_download_sounds
+
+allow_download_sounds
+
+Allow downloading. Should be set to 1 on client and server, because SoFplus uses custom sounds.
+
+Values:
+
+- 0: Downloading not allowed
+- 1: Downloading allowed

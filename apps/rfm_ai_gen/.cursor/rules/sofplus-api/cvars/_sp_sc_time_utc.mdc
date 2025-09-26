@@ -1,0 +1,15 @@
+---
+description: _sp_sc_time_utc - Time format for logging and commands
+alwaysApply: false
+---
+
+### _sp_sc_time_utc
+
+_sp_sc_time_utc
+
+Time format for logging and commands
+
+Values:
+
+- 0: Local time
+- 1: UTC (Coordinated Universal Time) (default)

@@ -1,0 +1,23 @@
+---
+description: sp_sc_timer - Set a timer event
+alwaysApply: false
+---
+
+### sp_sc_timer
+
+sp_sc_timer
+
+Set a timer event
+
+Synopsis:
+
+```txt
+sp_sc_timer
+DELAY
+
+COMMAND
+```
+Parameters:
+
+- DELAY:
+- COMMAND:

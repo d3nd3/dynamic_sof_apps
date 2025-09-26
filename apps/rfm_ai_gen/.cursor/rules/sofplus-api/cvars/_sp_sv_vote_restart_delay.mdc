@@ -1,0 +1,14 @@
+---
+description: _sp_sv_vote_restart_delay - Delay before the same client can start a vote again (to prevent vote flooding)
+alwaysApply: false
+---
+
+### _sp_sv_vote_restart_delay
+
+_sp_sv_vote_restart_delay
+
+Delay before the same client can start a vote again (to prevent vote flooding)
+
+Values:
+
+- Any number: Number of seconds (default = 60)

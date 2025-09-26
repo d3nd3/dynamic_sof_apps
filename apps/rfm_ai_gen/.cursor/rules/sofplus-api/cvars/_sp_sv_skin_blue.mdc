@@ -1,0 +1,15 @@
+---
+description: _sp_sv_skin_blue - Force skin name for all members of the blue team
+alwaysApply: false
+---
+
+### _sp_sv_skin_blue
+
+_sp_sv_skin_blue
+
+Force skin name for all members of the blue team
+
+Values:
+
+- Empty: No forced skin name (default)
+- Not empty: Force this skin name

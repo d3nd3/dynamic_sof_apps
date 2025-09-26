@@ -1,0 +1,28 @@
+---
+description: RMF control elements <cbuf>, <config>, <exitcfg>, <timeout>
+---
+
+### cbuf
+Queue a console command after the page is loaded.
+```text
+<cbuf "exec default">
+```
+
+### config
+Run a config whenever the page is created or revisited.
+```text
+<config menus/video>
+```
+
+### exitcfg
+Run a config whenever a page is destroyed or left.
+```text
+<exitcfg applysettings>
+```
+
+### timeout
+Run a command after N seconds.
+```text
+<timeout 5.0 "menu intro">
+```
+

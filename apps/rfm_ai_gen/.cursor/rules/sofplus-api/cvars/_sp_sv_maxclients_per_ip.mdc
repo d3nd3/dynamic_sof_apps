@@ -1,0 +1,15 @@
+---
+description: _sp_sv_maxclients_per_ip - Maximum number of clients per IP address.
+alwaysApply: false
+---
+
+### _sp_sv_maxclients_per_ip
+
+_sp_sv_maxclients_per_ip
+
+Maximum number of clients per IP address.
+
+Values:
+
+- 0: Disabled (default)
+- >0: Use this maximum

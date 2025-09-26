@@ -1,0 +1,14 @@
+---
+description: _sp_sv_vote_duration - Time to cast a vote
+alwaysApply: false
+---
+
+### _sp_sv_vote_duration
+
+_sp_sv_vote_duration
+
+Time to cast a vote
+
+Values:
+
+- Any number: Number of seconds (default = 20)

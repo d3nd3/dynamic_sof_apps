@@ -1,0 +1,18 @@
+---
+description: spectator - Player / spectator mode selection
+alwaysApply: false
+---
+
+### spectator
+
+spectator
+
+Player / spectator mode selection
+
+Values:
+
+- 0: Player
+- 1: Spectator; Normal 3rd person view
+- 2: Spectator; 1st person view (see _sp_cl_spectator_distance). Only on SoFplus servers.
+- 3: Spectator; Same as `1`, but you will see player health / armor / weapon info if that has been enabled on the server. Only on SoFplus servers.
+- 4: spectator; Same as `2`, but you will see player health / armor / weapon info if that has been enabled on the server. Only on SoFplus servers.

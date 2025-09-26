@@ -1,0 +1,15 @@
+---
+description: _sp_sv_weapon_drop_on_die - Drop weapon when player dies.
+alwaysApply: false
+---
+
+### _sp_sv_weapon_drop_on_die
+
+_sp_sv_weapon_drop_on_die
+
+Drop weapon when player dies.
+
+Values:
+
+- 0: No
+- 1: Yes (default)

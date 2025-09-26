@@ -1,0 +1,10 @@
+---
+description: _sp_sc_info_net_rcv_bytes - Is set to the number of received bytes when the sp_sc_info_net command is executed.
+alwaysApply: false
+---
+
+### _sp_sc_info_net_rcv_bytes
+
+_sp_sc_info_net_rcv_bytes
+
+Is set to the number of received bytes when the sp_sc_info_net command is executed.

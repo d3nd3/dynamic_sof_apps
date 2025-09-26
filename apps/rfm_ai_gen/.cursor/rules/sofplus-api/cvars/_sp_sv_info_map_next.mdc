@@ -1,0 +1,10 @@
+---
+description: _sp_sv_info_map_next - Is set to the next map name when the current map ends. You can change this cvar in the _sp_sv_on_map_end and _sp_sv_on_map_rotate events. By using a `!` prefix, the server can be forced to use the map command instead of the gamemap command.
+alwaysApply: false
+---
+
+### _sp_sv_info_map_next
+
+_sp_sv_info_map_next
+
+Is set to the next map name when the current map ends. You can change this cvar in the _sp_sv_on_map_end and _sp_sv_on_map_rotate events. By using a `!` prefix, the server can be forced to use the map command instead of the gamemap command.

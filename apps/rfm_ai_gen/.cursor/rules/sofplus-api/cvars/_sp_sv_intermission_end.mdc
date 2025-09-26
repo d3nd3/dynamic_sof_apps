@@ -1,0 +1,15 @@
+---
+description: _sp_sv_intermission_end - Maximum number of seconds to wait before the intermission ends. A player can end the intermission sooner by pressing the fire button.
+alwaysApply: false
+---
+
+### _sp_sv_intermission_end
+
+_sp_sv_intermission_end
+
+Maximum number of seconds to wait before the intermission ends. A player can end the intermission sooner by pressing the fire button.
+
+Values:
+
+- 0: Do not end intermission (default)
+- >0: End intermission after this amount of seconds.

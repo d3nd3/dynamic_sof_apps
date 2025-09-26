@@ -1,0 +1,20 @@
+---
+description: sp_sc_cvar_math_ceil - Find integer ceiling
+alwaysApply: false
+---
+
+### sp_sc_cvar_math_ceil
+
+sp_sc_cvar_math_ceil
+
+Find integer ceiling
+
+Synopsis:
+
+```txt
+sp_sc_cvar_math_ceil
+CVAR
+```
+Parameters:
+
+- CVAR:

@@ -1,0 +1,24 @@
+---
+description: dot_vote_next - .vote next
+alwaysApply: false
+---
+
+### dot_vote_next
+
+.vote next
+
+Start a vote to end the current map (and go to the next map)
+
+Synopsis:
+
+```txt
+.vote next`
+`.vote next
+```
+
+Example:
+
+```txt
+].vote next`
+`].vote next
+```

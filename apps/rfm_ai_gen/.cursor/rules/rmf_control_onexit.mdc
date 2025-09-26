@@ -1,0 +1,11 @@
+---
+description: Undocumented RMF control <onexit cvar menuFile> conditional menu on page exit
+---
+
+Display another menu when leaving the page, conditional on a cvar value.
+
+### Example
+```text
+<onexit menu_settings_changed "altervid">
+```
+

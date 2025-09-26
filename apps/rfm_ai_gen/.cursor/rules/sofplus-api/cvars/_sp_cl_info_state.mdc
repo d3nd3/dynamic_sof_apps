@@ -1,0 +1,18 @@
+---
+description: _sp_cl_info_state - Is set to the current connection state
+alwaysApply: false
+---
+
+### _sp_cl_info_state
+
+_sp_cl_info_state
+
+Is set to the current connection state
+
+Values:
+
+- 1: Not connected
+- 2: Attempting to connect to a server
+- 4: (Re)connecting to a server
+- 7: Loading map
+- 8: Spawned into the map

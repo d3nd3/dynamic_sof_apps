@@ -1,0 +1,26 @@
+---
+description: sp_sc_cvar_random_float - Generate a random floating point number
+alwaysApply: false
+---
+
+### sp_sc_cvar_random_float
+
+sp_sc_cvar_random_float
+
+Generate a random floating point number
+
+Synopsis:
+
+```txt
+sp_sc_cvar_random_float
+CVAR
+
+MIN VALUE
+
+MAX VALUE
+```
+Parameters:
+
+- CVAR:
+- MIN VALUE:
+- MAX VALUE:

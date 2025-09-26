@@ -1,0 +1,20 @@
+---
+description: dot_vote_control_limit - .vote control_limit
+alwaysApply: false
+---
+
+### dot_vote_control_limit
+
+.vote control_limit
+
+Start a vote to change the control_limit
+
+Synopsis:
+
+```txt
+.vote control_limit
+CONTROL_LIMIT
+```
+Parameters:
+
+- CONTROL_LIMIT:

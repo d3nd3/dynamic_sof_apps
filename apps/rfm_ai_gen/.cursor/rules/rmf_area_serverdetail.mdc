@@ -1,0 +1,7 @@
+---
+description: RMF area <serverdetail> selected server details with translated fields
+---
+
+### Options
+- `title <list>` — column headers (e.g., "Key,Value").
+

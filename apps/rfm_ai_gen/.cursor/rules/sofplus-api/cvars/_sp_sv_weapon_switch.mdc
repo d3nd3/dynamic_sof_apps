@@ -1,0 +1,18 @@
+---
+description: _sp_sv_weapon_switch - Bestweap weapon switching behaviour.
+alwaysApply: false
+---
+
+### _sp_sv_weapon_switch
+
+_sp_sv_weapon_switch
+
+Bestweap weapon switching behaviour.
+
+Values:
+
+- 0: Let the player decide with his bestweap settings (default)
+- 1: Force bestweap to none
+- 2: Force bestweap to safe
+- 3: Force bestweap to unsafe
+- 4: Switch to the newest weapon; Not implemented yet!

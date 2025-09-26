@@ -1,0 +1,17 @@
+---
+description: ip - Force SoF to bind to the specified IP address. If your PC has multiple IP addresses, you can use this to select the correct address.
+alwaysApply: false
+---
+
+### ip
+
+ip
+
+Force SoF to bind to the specified IP address. If your PC has multiple IP addresses, you can use this to select the correct address.
+
+Example:
+
+```txt
+SoF.exe +set ip 127.0.0.1`
+`SoF.exe +set ip 127.0.0.1
+```

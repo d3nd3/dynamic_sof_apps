@@ -1,0 +1,20 @@
+---
+description: dot_vote_weapons - .vote weapons
+alwaysApply: false
+---
+
+### dot_vote_weapons
+
+.vote weapons
+
+Start a vote for all/bullet-only weapons
+
+Synopsis:
+
+```txt
+.vote weapons
+WEAPONS
+```
+Parameters:
+
+- WEAPONS:

@@ -1,0 +1,10 @@
+---
+description: name - Player name. Some checks have been added to remove characters that can cause servers to crash.
+alwaysApply: false
+---
+
+### name
+
+name
+
+Player name. Some checks have been added to remove characters that can cause servers to crash.

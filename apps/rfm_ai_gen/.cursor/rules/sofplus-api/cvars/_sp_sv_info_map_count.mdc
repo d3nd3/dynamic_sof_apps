@@ -1,0 +1,10 @@
+---
+description: _sp_sv_info_map_count - Is set to the number of maps since the server started
+alwaysApply: false
+---
+
+### _sp_sv_info_map_count
+
+_sp_sv_info_map_count
+
+Is set to the number of maps since the server started

@@ -1,0 +1,13 @@
+---
+description: RMF control element <ikey action command> to bind by action
+---
+
+### Purpose
+Trigger a command when any key bound to the given action is pressed.
+
+### Example
+```text
+<ikey +attack "echo hello">
+```
+If `mouse1` and `lctrl` are bound to `+attack`, either key will run the command.
+

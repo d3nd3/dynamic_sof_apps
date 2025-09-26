@@ -1,0 +1,15 @@
+---
+description: _sp_cl_vid_gl_texture_mag_filter - OpenGL GL_TEXTURE_MAG_FILTER for rendering a surface that is bigger than the texture being applied (near objects)
+alwaysApply: false
+---
+
+### _sp_cl_vid_gl_texture_mag_filter
+
+_sp_cl_vid_gl_texture_mag_filter
+
+OpenGL GL_TEXTURE_MAG_FILTER for rendering a surface that is bigger than the texture being applied (near objects)
+
+Values:
+
+- GL_NEAREST: GL_NEAREST (default)
+- GL_LINEAR: GL_LINEAR

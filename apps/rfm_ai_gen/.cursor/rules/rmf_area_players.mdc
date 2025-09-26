@@ -1,0 +1,7 @@
+---
+description: RMF area <players> list of players on server with frags and ping
+---
+
+### Options
+- `title <list>` — column headers.
+

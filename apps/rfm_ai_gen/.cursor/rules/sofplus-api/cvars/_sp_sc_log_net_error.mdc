@@ -1,0 +1,15 @@
+---
+description: _sp_sc_log_net_error - Network traffic logging of bad packets
+alwaysApply: false
+---
+
+### _sp_sc_log_net_error
+
+_sp_sc_log_net_error
+
+Network traffic logging of bad packets
+
+Values:
+
+- 0: Disable (default)
+- 1: Enable. Bad packets will be logged to `user/sofplus/log/net_err.log`. To convert the logged data to a readable format, you can use the splogconv.exe program.

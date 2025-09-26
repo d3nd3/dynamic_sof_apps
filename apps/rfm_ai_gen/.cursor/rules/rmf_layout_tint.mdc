@@ -1,0 +1,13 @@
+---
+description: RMF layout element <tint name colour> to name a 32-bit RGBA colour
+---
+
+### Purpose
+Map a colour name to an ABGR 32-bit value (e.g., 0xff0000ff). Names can be used anywhere a colour is accepted.
+
+### Example
+```text
+<tint red 0xff0000ff>
+<tint darken 0x60000000>
+```
+

@@ -1,0 +1,14 @@
+---
+description: _sp_sv_vote_start_delay - Delay after the map begins, before a vote can be started
+alwaysApply: false
+---
+
+### _sp_sv_vote_start_delay
+
+_sp_sv_vote_start_delay
+
+Delay after the map begins, before a vote can be started
+
+Values:
+
+- Any number: Number of seconds (default = 30)

@@ -1,0 +1,23 @@
+---
+description: sp_sc_cvar_math_div - Divide variable by value
+alwaysApply: false
+---
+
+### sp_sc_cvar_math_div
+
+sp_sc_cvar_math_div
+
+Divide variable by value
+
+Synopsis:
+
+```txt
+sp_sc_cvar_math_div
+CVAR
+
+VALUE
+```
+Parameters:
+
+- CVAR:
+- VALUE:

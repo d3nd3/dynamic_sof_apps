@@ -1,0 +1,10 @@
+---
+description: _sp_sv_sound_10s - The variable can point to a custom sound file that will be played on the clients when 10 seconds remain
+alwaysApply: false
+---
+
+### _sp_sv_sound_10s
+
+_sp_sv_sound_10s
+
+The variable can point to a custom sound file that will be played on the clients when 10 seconds remain

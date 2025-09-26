@@ -1,0 +1,54 @@
+---
+alwaysApply: true
+---
+
+# SoFplus `.func` quick reference (Cursor)
+
+Use this to interpret scripts without loading extra docs unless necessary.
+
+Namespaces
+- `spf_*`: script functions
+- `sp_sv_*`: server actions/IO
+- `sp_cl_*`: client actions/IO
+- `sp_sc_*`: shared/common actions/IO
+- `_sp_*`: sofplus internal cvars
+
+Variables/expansion
+- global unless `~name`, if expr contains VALUE : value `#expr` expands to "VALUE", value `$expr` expands to VALUE (Note the double quotes missing).
+- Dynamic cvar names: `sp_sc_cvar_sset ~tmp prefix #suffix` → `set #~tmp value`
+
+Assign/math
+- set <CVAR> <VAL> <RARELY USED OPTIONAL FLAGS>
+- sset <CVAR> <ARGS...> (This joins all args together with spaces inbetween them and stores in CVAR)
+- sp_sc_cvar_sset (Like sset except it does not put spaces inbetween the arguments)
+- zero <CVAR> (Clears the cvar to "" empty string)
+- add <CVAR> <VAL> (Performs math, trick:if you add 0, the cvar becomes 0 if its not a valid number eg.)
+
+Flow
+- if: `sp_sc_flow_if text|number cvar|val A <op> cvar|val B {true clause} {else clause}`
+- while: `sp_sc_flow_while text|number cvar|val A <op> cvar|val B {}`
+
+Timers
+- `sp_sc_timer <ms> "cmd..."` schedules; loops re‑schedule themselves
+
+Info/print
+- `sp_sv_info_client $slot` → `_sp_sv_info_client_*`
+- `sp_sc_info_time` → `_sp_sc_info_time_*`
+- Unescape before print: `sp_sc_cvar_unescape ~msg ~msg`
+
+Hooks
+- Register: `spf_sc_list_add_func <hook> "<func>"`
+- Common: `_sp_sv_on_map_begin`, `_sp_sv_on_client_begin`, `_sp_sv_on_client_disconnect`
+
+Idioms
+- Per‑slot state via `_prefix_$slot`; empty string = false
+- Reconnect state via stored IP list and `sp_sc_cvar_split`
+
+Minimal example
+```txt
+sp_sc_cvar_sset ~j _spf_sv_jailed_ #~slot
+set #~j 1
+sp_sv_client_spec $~slot
+```
+
+

@@ -1,0 +1,10 @@
+---
+description: _sp_cl_info_pos_x - Is set when the sp_cl_info_pos command is executed.
+alwaysApply: false
+---
+
+### _sp_cl_info_pos_x
+
+_sp_cl_info_pos_x
+
+Is set when the sp_cl_info_pos command is executed.

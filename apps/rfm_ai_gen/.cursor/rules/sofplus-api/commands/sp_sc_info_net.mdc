@@ -1,0 +1,24 @@
+---
+description: sp_sc_info_net - Update the `_sp_sc_info_net_*` cvars with network traffic info
+alwaysApply: false
+---
+
+### sp_sc_info_net
+
+sp_sc_info_net
+
+Update the `_sp_sc_info_net_*` cvars with network traffic info
+
+Synopsis:
+
+```txt
+sp_sc_info_net`
+`sp_sc_info_net
+```
+
+Example:
+
+```txt
+]sp_sc_info_net`
+`]sp_sc_info_net
+```

@@ -1,0 +1,16 @@
+---
+description: _sp_sv_ctf_switch_keep_score - Players changing teams keep their score
+alwaysApply: false
+---
+
+### _sp_sv_ctf_switch_keep_score
+
+_sp_sv_ctf_switch_keep_score
+
+Players changing teams keep their score
+
+Values:
+
+- 0: No (default)
+- 1: Yes, if the admin used the sp_sv_client_blue or sp_sv_client_red command
+- 2: Yes, always

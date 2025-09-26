@@ -1,0 +1,20 @@
+---
+description: sp_sv_say_unmute - Unmute client(s)
+alwaysApply: false
+---
+
+### sp_sv_say_unmute
+
+sp_sv_say_unmute
+
+Unmute client(s)
+
+Synopsis:
+
+```txt
+sp_sv_say_unmute
+SLOT|*
+```
+Parameters:
+
+- SLOT|*:

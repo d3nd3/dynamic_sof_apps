@@ -1,0 +1,16 @@
+---
+description: _sp_sv_on_client_spawn - Contains a comma separated list of function names to be executed when a client spawns.
+alwaysApply: false
+---
+
+### _sp_sv_on_client_spawn
+
+_sp_sv_on_client_spawn
+
+Contains a comma separated list of function names to be executed when a client spawns.
+
+Function arguments:
+
+1
+
+Slot number of client

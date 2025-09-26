@@ -1,0 +1,20 @@
+---
+description: dot_vote_ammo - .vote ammo
+alwaysApply: false
+---
+
+### dot_vote_ammo
+
+.vote ammo
+
+Start a vote for limited/unlimited ammo
+
+Synopsis:
+
+```txt
+.vote ammo
+AMMO
+```
+Parameters:
+
+- AMMO:

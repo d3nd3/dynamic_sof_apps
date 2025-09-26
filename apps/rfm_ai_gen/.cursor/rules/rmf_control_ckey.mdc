@@ -1,0 +1,13 @@
+---
+description: RMF control element <ckey keyname cvar falsecmd truecmd> conditional bind
+---
+
+### Purpose
+Bind a key to one of two commands depending on whether a cvar is zero or non-zero.
+
+### Example
+```text
+<ckey ENTER console "play sound/menus/invalid.wav" "menuoff">
+```
+If `console` is enabled, menus are turned off; otherwise an invalid sound plays.
+

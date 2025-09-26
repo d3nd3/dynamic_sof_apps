@@ -1,0 +1,16 @@
+---
+description: RMF layout elements <bghoul> and <backdrop> for background content
+---
+
+### bghoul <model>
+Load a ghoul model as background to bolt other areas to.
+
+### backdrop
+Set background image/colour.
+- `tile` — tile image
+- `stretch` — stretch image
+- `center` — center image
+- `left` — flush left
+- `right` — flush right
+- `bgcolor <colour>` — background fill colour
+

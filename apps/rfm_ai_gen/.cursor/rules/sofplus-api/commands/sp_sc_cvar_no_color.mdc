@@ -1,0 +1,23 @@
+---
+description: sp_sc_cvar_no_color - Remove color
+alwaysApply: false
+---
+
+### sp_sc_cvar_no_color
+
+sp_sc_cvar_no_color
+
+Remove color
+
+Synopsis:
+
+```txt
+sp_sc_cvar_no_color
+DST CVAR
+
+SRC CVAR
+```
+Parameters:
+
+- DST CVAR:
+- SRC CVAR:

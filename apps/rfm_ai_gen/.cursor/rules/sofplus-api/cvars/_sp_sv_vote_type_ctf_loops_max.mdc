@@ -1,0 +1,15 @@
+---
+description: _sp_sv_vote_type_ctf_loops_max - Maximum value for vote type ctf_loops
+alwaysApply: false
+---
+
+### _sp_sv_vote_type_ctf_loops_max
+
+_sp_sv_vote_type_ctf_loops_max
+
+Maximum value for vote type ctf_loops
+
+Values:
+
+- < _sp_sv_vote_type_ctf_loops_min: Disable vote type ctf_loops
+- > 0: Maximum value (default = 999)

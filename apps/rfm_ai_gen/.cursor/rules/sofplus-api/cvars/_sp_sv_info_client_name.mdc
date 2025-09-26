@@ -1,0 +1,10 @@
+---
+description: _sp_sv_info_client_name - Is set to the clients name when the sp_sv_info_client command is executed
+alwaysApply: false
+---
+
+### _sp_sv_info_client_name
+
+_sp_sv_info_client_name
+
+Is set to the clients name when the sp_sv_info_client command is executed

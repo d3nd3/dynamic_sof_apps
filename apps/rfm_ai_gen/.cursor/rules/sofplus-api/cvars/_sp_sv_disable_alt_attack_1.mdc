@@ -1,0 +1,15 @@
+---
+description: _sp_sv_disable_alt_attack_1 - Disable alternate attack for weapon 1 (knife)
+alwaysApply: false
+---
+
+### _sp_sv_disable_alt_attack_1
+
+_sp_sv_disable_alt_attack_1
+
+Disable alternate attack for weapon 1 (knife)
+
+Values:
+
+- 0: Not disabled (default)
+- 1: Disabled

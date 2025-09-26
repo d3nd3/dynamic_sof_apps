@@ -1,0 +1,15 @@
+---
+description: _sp_sc_log_net - Network traffic logging
+alwaysApply: false
+---
+
+### _sp_sc_log_net
+
+_sp_sc_log_net
+
+Network traffic logging
+
+Values:
+
+- 0: Disable (default)
+- 1: Enable. Network data will be written to `user/sofplus/log/net_00.log` .. `user/sofplus/log/net_59.log` (depending on the current second). After a minute, old data wil be overwritten by newer data. To convert the logged data to a readable format, you can use the splogconv.exe program.

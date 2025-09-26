@@ -1,0 +1,24 @@
+---
+description: sp_sv_info_frames - Get current server frame and put it in the _sp_sv_info_frames variable
+alwaysApply: false
+---
+
+### sp_sv_info_frames
+
+sp_sv_info_frames
+
+Get current server frame and put it in the _sp_sv_info_frames variable
+
+Synopsis:
+
+```txt
+sp_sv_info_frames`
+`sp_sv_info_frames
+```
+
+Example:
+
+```txt
+]sp_sv_info_frames`
+`]sp_sv_info_frames
+```

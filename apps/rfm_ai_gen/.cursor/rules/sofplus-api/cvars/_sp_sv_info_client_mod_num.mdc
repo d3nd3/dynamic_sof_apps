@@ -1,0 +1,10 @@
+---
+description: _sp_sv_info_client_mod_num - Is set to the clients MOD (Means Of Death) index when the sp_sv_info_client_mod command is executed
+alwaysApply: false
+---
+
+### _sp_sv_info_client_mod_num
+
+_sp_sv_info_client_mod_num
+
+Is set to the clients MOD (Means Of Death) index when the sp_sv_info_client_mod command is executed

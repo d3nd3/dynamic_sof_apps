@@ -1,0 +1,10 @@
+---
+description: _sp_sv_info_client_flags_recovered - Is set to the clients number of recovered flags when the sp_sv_info_client command is executed
+alwaysApply: false
+---
+
+### _sp_sv_info_client_flags_recovered
+
+_sp_sv_info_client_flags_recovered
+
+Is set to the clients number of recovered flags when the sp_sv_info_client command is executed

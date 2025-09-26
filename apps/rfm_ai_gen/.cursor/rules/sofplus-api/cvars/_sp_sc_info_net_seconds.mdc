@@ -1,0 +1,10 @@
+---
+description: _sp_sc_info_net_seconds - Is set to the number of elapsed seconds since starting counting when the sp_sc_info_net command is executed.
+alwaysApply: false
+---
+
+### _sp_sc_info_net_seconds
+
+_sp_sc_info_net_seconds
+
+Is set to the number of elapsed seconds since starting counting when the sp_sc_info_net command is executed.

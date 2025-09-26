@@ -1,0 +1,16 @@
+---
+description: _sp_sv_timelimit_mod - Modify the timelimit counting
+alwaysApply: false
+---
+
+### _sp_sv_timelimit_mod
+
+_sp_sv_timelimit_mod
+
+Modify the timelimit counting
+
+Values:
+
+- 0: No (default). Counting starts from the player that has been in the server the longest.
+- 1: Yes. Counting starts when the map loads.
+- 2: Yes. Counting starts when the map loads. Counting stops when the game is paused and it's resumed when the game is unpaused.

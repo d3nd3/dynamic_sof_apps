@@ -1,0 +1,15 @@
+---
+description: _sp_sv_ctf_bonus_carrier_protect - Change bonus for protecting the flag carrier
+alwaysApply: false
+---
+
+### _sp_sv_ctf_bonus_carrier_protect
+
+_sp_sv_ctf_bonus_carrier_protect
+
+Change bonus for protecting the flag carrier
+
+Values:
+
+- < 0: Unmodified (default)
+- 0 .. 127: New bonus

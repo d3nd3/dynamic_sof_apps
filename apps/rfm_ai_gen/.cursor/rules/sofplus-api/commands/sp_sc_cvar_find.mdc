@@ -1,0 +1,26 @@
+---
+description: sp_sc_cvar_find - Find cvars
+alwaysApply: false
+---
+
+### sp_sc_cvar_find
+
+sp_sc_cvar_find
+
+Find cvars
+
+Synopsis:
+
+```txt
+sp_sc_cvar_find
+DST CVAR
+
+PATTERN
+```
+Parameters:
+
+- DST CVAR:
+- DST CVAR: _0`: Number of cvars found
+- DST CVAR: _1`: First cvar
+- DST CVAR: _n`: Cvar n
+- PATTERN:

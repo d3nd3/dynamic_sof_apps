@@ -1,0 +1,10 @@
+---
+description: _sp_cl_fps_debuggraph_color - FPS graph color in hexadecimal ABGR format (default = 9f00ff00). See also cl_showfps.
+alwaysApply: false
+---
+
+### _sp_cl_fps_debuggraph_color
+
+_sp_cl_fps_debuggraph_color
+
+FPS graph color in hexadecimal ABGR format (default = 9f00ff00). See also cl_showfps.

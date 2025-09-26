@@ -1,0 +1,29 @@
+---
+description: Common area keyword parameters usable across most RMF areas
+---
+
+These modifiers are accepted by most areas (some may be ignored depending on area type):
+
+- `key <key> <command>` — run command when area highlighted and key pressed.
+- `ckey <key> <cvar> <falsecmd> <truecmd>` — conditional key bind while highlighted.
+- `ikey <action> <command>` — action-based bind while highlighted.
+- `tint <colour>` — base tint filter.
+- `atint <colour>` — highlight tint when hovered.
+- `btint <colour>` — background fill tint (area-dependent).
+- `ctint <colour>` / `dtint <colour>` — additional highlight/diff tints (area-dependent).
+- `noshade` — disable automatic shading.
+- `noscale` — disable auto scaling of bolt offsets.
+- `border <width> <lineWidth> <lineColour>` — area border.
+- `width <value>` / `height <value>` — override size.
+- `cvar <cvar>` — associate a console variable.
+- `cvari <cvar>` — integer console variable association.
+- `inc <value>` — keyboard step size for value changes.
+- `mod <value>` — modulus (wrap-around) for values.
+- `tip <text>` — tooltip text.
+- `xoff <value>` / `yoff <value>` — pixel offsets (often for bolted areas).
+- `tab` — use next tab stop (from `<tab>` layout).
+- `noborder` — disable border even if defaults define one.
+- `bolt <bolt>` — bolt to most recent ghoul model bolt.
+- `bbolt <bolt>` — bolt to background ghoul model bolt.
+- `align <left|center|right>` — override page alignment.
+

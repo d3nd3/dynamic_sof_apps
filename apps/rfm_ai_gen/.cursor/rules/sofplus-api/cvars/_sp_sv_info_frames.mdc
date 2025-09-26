@@ -1,0 +1,10 @@
+---
+description: _sp_sv_info_frames - Is set to the number of frames since the map started when the sp_sv_info_frames command is executed
+alwaysApply: false
+---
+
+### _sp_sv_info_frames
+
+_sp_sv_info_frames
+
+Is set to the number of frames since the map started when the sp_sv_info_frames command is executed

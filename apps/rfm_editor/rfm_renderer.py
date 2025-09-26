@@ -41,6 +41,9 @@ class RfmRenderer:
         # Optional resolver for <page> targets and feature toggle for sub-frame rendering
         self.page_resolver: Optional[Callable[[str, Optional[str]], Optional[RfmDocument]]] = None
         self.subframe_rendering_enabled: bool = False
+        # Exinclude render mode and resolver for dynamic expansion
+        self.exinclude_mode: str = "zero"  # or "nonzero"
+        self.exinclude_parser: Optional[Callable[[str, Optional[str], str], Optional[RfmDocument]]] = None
 
     def _doc_key_of(self, doc: RfmDocument) -> str:
         try:
@@ -139,8 +142,28 @@ class RfmRenderer:
         return None
 
     def render_document(self, doc: RfmDocument, scene: QGraphicsScene) -> None:
+        # If the document contains exinclude tags and a parser is provided, create a transient doc expanded for current mode
+        try:
+            expanded_doc = None
+            if self.exinclude_parser and doc and getattr(doc, 'file_path', None):
+                # Re-read from serialized current doc to keep edits
+                from .rfm_serializer import serialize_rfm
+                serialized = serialize_rfm(doc)
+                expanded_doc = self.exinclude_parser(serialized, getattr(doc, 'file_path', None), self.exinclude_mode)
+            # Fallback if expansion produced an empty/invalid document
+            def _is_valid(d) -> bool:
+                try:
+                    return bool(getattr(d, 'segments', None)) and (len(getattr(d, 'frames', {})) > 0 or len(getattr(d, 'elements', [])) > 0)
+                except Exception:
+                    return False
+            if expanded_doc is not None and _is_valid(expanded_doc):
+                working_doc = expanded_doc
+            else:
+                working_doc = doc
+        except Exception:
+            working_doc = doc
         # Build parent-child relationships via 'cut' (frames nested inside other frames)
-        all_frames = list(doc.frames.values())
+        all_frames = list(working_doc.frames.values())
         frames_by_name = {f.name: f for f in all_frames}
         children_by_parent: dict[str, list[RfmFrame]] = {}
         top_level_frames: list[RfmFrame] = []
@@ -212,12 +235,12 @@ class RfmRenderer:
         self.content_rect = screen_rect
 
         # Draw backdrop behind frames
-        if doc.backdrop_bgcolor:
-            bg = self._color_from_token(doc.backdrop_bgcolor)
+        if working_doc.backdrop_bgcolor:
+            bg = self._color_from_token(working_doc.backdrop_bgcolor)
             bg_item = scene.addRect(screen_rect, QPen(Qt.NoPen), QBrush(bg))
             bg_item.setZValue(-100)
-        if doc.backdrop_image:
-            self._draw_backdrop_image(scene, screen_rect, doc.backdrop_image, doc.backdrop_mode)
+        if working_doc.backdrop_image:
+            self._draw_backdrop_image(scene, screen_rect, working_doc.backdrop_image, working_doc.backdrop_mode)
 
         # Now draw frames on top
         # Reset rect caches for a fresh top-level render
@@ -230,7 +253,7 @@ class RfmRenderer:
             self._draw_frame(scene, rect, frame)
             self.frame_rects[frame.name] = rect
             try:
-                dk = self._doc_key_of(doc)
+                dk = self._doc_key_of(working_doc)
                 self.frame_rects_by_doc.setdefault(dk, {})[frame.name] = rect
             except Exception:
                 pass
@@ -259,13 +282,13 @@ class RfmRenderer:
 
         # Simple content renderer: lay out elements within the first frame rect
         host_rect = frame_rects[0][0] if frame_rects else screen_rect
-        self._draw_elements(scene, doc, host_rect)
+        self._draw_elements(scene, working_doc, host_rect)
 
         # Optionally render sub-documents referenced by frame.page into each frame's inner area
         if self.subframe_rendering_enabled:
             try:
                 visited: set[str] = set()
-                base_key: Optional[str] = getattr(doc, 'file_path', None)
+                base_key: Optional[str] = getattr(working_doc, 'file_path', None)
                 if isinstance(base_key, str) and base_key:
                     visited.add(base_key)
                 for rect, frame in frame_rects:

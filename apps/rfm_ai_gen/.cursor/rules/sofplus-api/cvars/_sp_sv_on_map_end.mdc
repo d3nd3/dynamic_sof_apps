@@ -1,0 +1,10 @@
+---
+description: _sp_sv_on_map_end - Contains a comma separated list of function names to be executed when the map ends. The name of the next map is available in _sp_sv_info_map_next.
+alwaysApply: false
+---
+
+### _sp_sv_on_map_end
+
+_sp_sv_on_map_end
+
+Contains a comma separated list of function names to be executed when the map ends. The name of the next map is available in _sp_sv_info_map_next.

@@ -1,0 +1,15 @@
+---
+description: _sp_sv_spawn_replace_file - File with entities replacement info. The file must be located in the `user/sofplus/sv/spawn/` directory.
+alwaysApply: false
+---
+
+### _sp_sv_spawn_replace_file
+
+_sp_sv_spawn_replace_file
+
+File with entities replacement info. The file must be located in the `user/sofplus/sv/spawn/` directory.
+
+Values:
+
+- Empty: Don't replace entities (default)
+- Not empty: Try replacing entities

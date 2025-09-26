@@ -1,0 +1,20 @@
+---
+description: sp_sv_say_mute - Mute client(s)
+alwaysApply: false
+---
+
+### sp_sv_say_mute
+
+sp_sv_say_mute
+
+Mute client(s)
+
+Synopsis:
+
+```txt
+sp_sv_say_mute
+SLOT|*
+```
+Parameters:
+
+- SLOT|*:

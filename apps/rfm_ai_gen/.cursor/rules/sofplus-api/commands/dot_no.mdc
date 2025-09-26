@@ -1,0 +1,24 @@
+---
+description: dot_no - Vote no
+alwaysApply: false
+---
+
+### dot_no
+
+.no
+
+Vote no
+
+Synopsis:
+
+```txt
+.no`
+`.no
+```
+
+Example:
+
+```txt
+].no`
+`].no
+```

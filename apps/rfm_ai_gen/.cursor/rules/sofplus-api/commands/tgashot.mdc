@@ -1,0 +1,12 @@
+---
+description: tgashot - The old `screenshot` command has been renamed to `tgashot`.
+alwaysApply: false
+---
+
+### tgashot
+
+tgashot
+
+The old `screenshot` command has been renamed to `tgashot`.
+
+Screenshots will be written in TGA format.

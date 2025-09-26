@@ -1,0 +1,15 @@
+---
+description: console - Values
+alwaysApply: false
+---
+
+### console
+
+console
+
+Console
+
+Values:
+
+- 0: Disable
+- 1: Enable (default)

@@ -1,0 +1,20 @@
+---
+description: sp_sc_func_list - Display a list of functions
+alwaysApply: false
+---
+
+### sp_sc_func_list
+
+sp_sc_func_list
+
+Display a list of functions
+
+Synopsis:
+
+```txt
+sp_sc_func_list
+FUNCTION...
+```
+Parameters:
+
+- FUNCTION:

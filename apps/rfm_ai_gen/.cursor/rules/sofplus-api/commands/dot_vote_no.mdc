@@ -1,0 +1,24 @@
+---
+description: dot_vote_no - .vote no
+alwaysApply: false
+---
+
+### dot_vote_no
+
+.vote no
+
+Vote no
+
+Synopsis:
+
+```txt
+.vote no`
+`.vote no
+```
+
+Example:
+
+```txt
+].vote no`
+`].vote no
+```

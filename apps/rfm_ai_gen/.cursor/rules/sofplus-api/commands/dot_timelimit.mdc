@@ -1,0 +1,24 @@
+---
+description: dot_timelimit - Display information about the timelimit
+alwaysApply: false
+---
+
+### dot_timelimit
+
+.timelimit
+
+Display information about the timelimit
+
+Synopsis:
+
+```txt
+.timelimit`
+`.timelimit
+```
+
+Example:
+
+```txt
+].timelimit`
+`].timelimit
+```

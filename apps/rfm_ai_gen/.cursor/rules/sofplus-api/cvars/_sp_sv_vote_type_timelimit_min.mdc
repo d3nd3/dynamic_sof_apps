@@ -1,0 +1,14 @@
+---
+description: _sp_sv_vote_type_timelimit_min - Minimum value for vote type timelimit
+alwaysApply: false
+---
+
+### _sp_sv_vote_type_timelimit_min
+
+_sp_sv_vote_type_timelimit_min
+
+Minimum value for vote type timelimit
+
+Values:
+
+- > 0: Minimum value (default = 1)

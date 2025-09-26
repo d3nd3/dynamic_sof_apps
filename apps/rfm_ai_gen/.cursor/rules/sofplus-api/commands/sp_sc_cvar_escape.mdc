@@ -1,0 +1,28 @@
+---
+description: sp_sc_cvar_escape - Escape text
+alwaysApply: false
+---
+
+### sp_sc_cvar_escape
+
+sp_sc_cvar_escape
+
+Escape text
+
+Character codes are replaced by %hh, where hh is the hexadecimal value of the character
+
+Synopsis:
+
+```txt
+sp_sc_cvar_escape
+DST CVAR
+
+SRC CVAR
+
+CHAR CODE...
+```
+Parameters:
+
+- DST CVAR:
+- SRC CVAR:
+- CHAR CODE:

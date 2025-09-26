@@ -1,0 +1,20 @@
+---
+description: dot_vote_kick - .vote kick
+alwaysApply: false
+---
+
+### dot_vote_kick
+
+.vote kick
+
+Start a vote to kick a player
+
+Synopsis:
+
+```txt
+.vote kick
+KICK
+```
+Parameters:
+
+- KICK:

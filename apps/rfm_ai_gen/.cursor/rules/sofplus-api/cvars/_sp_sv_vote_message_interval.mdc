@@ -1,0 +1,14 @@
+---
+description: _sp_sv_vote_message_interval - Time between vote in progress messages
+alwaysApply: false
+---
+
+### _sp_sv_vote_message_interval
+
+_sp_sv_vote_message_interval
+
+Time between vote in progress messages
+
+Values:
+
+- Any number: Number of seconds between vote in progress reminder messages (default = 5)

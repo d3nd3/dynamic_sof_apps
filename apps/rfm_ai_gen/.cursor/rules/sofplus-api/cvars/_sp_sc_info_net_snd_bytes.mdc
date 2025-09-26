@@ -1,0 +1,10 @@
+---
+description: _sp_sc_info_net_snd_bytes - Is set to the number of sent bytes when the sp_sc_info_net command is executed.
+alwaysApply: false
+---
+
+### _sp_sc_info_net_snd_bytes
+
+_sp_sc_info_net_snd_bytes
+
+Is set to the number of sent bytes when the sp_sc_info_net command is executed.

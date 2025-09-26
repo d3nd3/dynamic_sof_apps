@@ -1,0 +1,20 @@
+---
+description: dot_fps - Set maximum framerate (changes cl_maxfps)
+alwaysApply: false
+---
+
+### dot_fps
+
+.fps
+
+Set maximum framerate (changes cl_maxfps)
+
+Synopsis:
+
+```txt
+.fps
+FPS
+```
+Parameters:
+
+- FPS:

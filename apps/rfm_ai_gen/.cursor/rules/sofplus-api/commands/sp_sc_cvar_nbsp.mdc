@@ -1,0 +1,23 @@
+---
+description: sp_sc_cvar_nbsp - Replace normal spaces (character 32) by No-break SPaces (character 129)
+alwaysApply: false
+---
+
+### sp_sc_cvar_nbsp
+
+sp_sc_cvar_nbsp
+
+Replace normal spaces (character 32) by No-break SPaces (character 129)
+
+Synopsis:
+
+```txt
+sp_sc_cvar_nbsp
+DST CVAR
+
+SRC CVAR
+```
+Parameters:
+
+- DST CVAR:
+- SRC CVAR:

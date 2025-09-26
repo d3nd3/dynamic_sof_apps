@@ -1,0 +1,26 @@
+---
+description: connect - The connect command has been modified.
+alwaysApply: false
+---
+
+### connect
+
+connect
+
+The connect command has been modified.
+
+Just before connecting, the following will happen:
+
+The _sp_cl_info_server cvar will be set to the ip:port (or hostname) of the server you are connecting to.
+
+The functions in the _sp_cl_on_connect cvar will be executed.
+
+Synopsis:
+
+```txt
+connect
+SERVER
+```
+Parameters:
+
+- SERVER:

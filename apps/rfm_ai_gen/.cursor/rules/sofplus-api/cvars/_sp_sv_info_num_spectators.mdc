@@ -1,0 +1,10 @@
+---
+description: _sp_sv_info_num_spectators - Is set to the number of clients who are spectating (not playing)
+alwaysApply: false
+---
+
+### _sp_sv_info_num_spectators
+
+_sp_sv_info_num_spectators
+
+Is set to the number of clients who are spectating (not playing)

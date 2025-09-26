@@ -1,0 +1,24 @@
+---
+description: dot_vote_restart - .vote restart
+alwaysApply: false
+---
+
+### dot_vote_restart
+
+.vote restart
+
+Start a vote to restart the current map
+
+Synopsis:
+
+```txt
+.vote restart`
+`.vote restart
+```
+
+Example:
+
+```txt
+].vote restart`
+`].vote restart
+```

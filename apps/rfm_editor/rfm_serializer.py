@@ -40,7 +40,7 @@ def serialize_rfm(doc: RfmDocument) -> str:
             parts.append(">")
             output_parts.append(" ".join(parts))
             continue
-        # default: original
+        # default: original (preserve exinclude and include tags as-is)
         output_parts.append(value)
 
     # Wrap inside <stm>..</stm> since tokenizer dropped the wrappers for logical editing

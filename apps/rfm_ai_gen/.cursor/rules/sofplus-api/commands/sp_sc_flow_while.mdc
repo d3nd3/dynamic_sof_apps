@@ -1,0 +1,38 @@
+---
+description: sp_sc_flow_while - Flow control - WHILE
+alwaysApply: false
+---
+
+### sp_sc_flow_while
+
+sp_sc_flow_while
+
+Flow control: WHILE
+
+Synopsis:
+
+```txt
+sp_sc_flow_while
+TYPE
+
+CV-TYPE
+
+CVAR/VALUE
+
+COMPARE
+
+CV-TYPE
+
+CVAR/VALUE
+
+COMMAND
+```
+Parameters:
+
+- TYPE:
+- CV-TYPE:
+- CVAR/VALUE: ` is a variable name
+- CVAR/VALUE: ` is a value
+- CVAR/VALUE:
+- COMPARE:
+- COMMAND:

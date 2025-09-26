@@ -1,0 +1,15 @@
+---
+description: _sp_sv_ctf_flag_drop - CTF flag drop allowed
+alwaysApply: false
+---
+
+### _sp_sv_ctf_flag_drop
+
+_sp_sv_ctf_flag_drop
+
+CTF flag drop allowed
+
+Values:
+
+- 0: No
+- 1: Yes (default)

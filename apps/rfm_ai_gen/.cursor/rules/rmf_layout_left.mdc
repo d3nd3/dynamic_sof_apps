@@ -1,0 +1,11 @@
+---
+description: RMF layout element <left> start from left margin (vs current position)
+---
+
+Start subsequent areas from next available left position.
+
+### Example
+```text
+<left>
+```
+

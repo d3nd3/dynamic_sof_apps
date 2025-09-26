@@ -1,0 +1,24 @@
+---
+description: sp_sc_cvar_save - Save cvars to file
+alwaysApply: false
+---
+
+### sp_sc_cvar_save
+
+sp_sc_cvar_save
+
+Save cvars to file
+
+Synopsis:
+
+```txt
+sp_sc_cvar_save
+FILENAME
+
+CVAR...
+```
+Parameters:
+
+- FILENAME:
+- FILENAME: `
+- CVAR...:

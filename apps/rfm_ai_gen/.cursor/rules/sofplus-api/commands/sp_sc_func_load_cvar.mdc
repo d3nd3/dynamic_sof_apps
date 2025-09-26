@@ -1,0 +1,20 @@
+---
+description: sp_sc_func_load_cvar - Load functions from a cvar
+alwaysApply: false
+---
+
+### sp_sc_func_load_cvar
+
+sp_sc_func_load_cvar
+
+Load functions from a cvar
+
+Synopsis:
+
+```txt
+sp_sc_func_load_cvar
+CVAR
+```
+Parameters:
+
+- CVAR:

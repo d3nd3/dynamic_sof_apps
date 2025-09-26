@@ -1,0 +1,34 @@
+---
+description: sp_cl_info_pos - Write info to `_sp_cl_info_*` cvars
+alwaysApply: false
+---
+
+### sp_cl_info_pos
+
+sp_cl_info_pos
+
+Write info to `_sp_cl_info_*` cvars
+
+Your current position (same data as produced by setting the `cl_showlocation` cvar to `1`)
+
+_sp_cl_info_pos_x
+
+_sp_cl_info_pos_y
+
+_sp_cl_info_pos_z
+
+_sp_cl_info_pos_yaw
+
+Synopsis:
+
+```txt
+sp_cl_info_pos`
+`sp_cl_info_pos
+```
+
+Example:
+
+```txt
+]sp_cl_info_pos`
+`]sp_cl_info_pos
+```

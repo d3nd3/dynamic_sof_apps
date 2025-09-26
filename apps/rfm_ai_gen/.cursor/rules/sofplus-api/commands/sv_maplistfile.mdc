@@ -1,0 +1,12 @@
+---
+description: sv_maplistfile - File with list of maps to be played.
+alwaysApply: false
+---
+
+### sv_maplistfile
+
+sv_maplistfile
+
+File with list of maps to be played.
+
+See also map

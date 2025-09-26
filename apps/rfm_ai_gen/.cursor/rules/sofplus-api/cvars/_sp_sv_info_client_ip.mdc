@@ -1,0 +1,10 @@
+---
+description: _sp_sv_info_client_ip - Is set to the clients IP address when the sp_sv_info_client command is executed
+alwaysApply: false
+---
+
+### _sp_sv_info_client_ip
+
+_sp_sv_info_client_ip
+
+Is set to the clients IP address when the sp_sv_info_client command is executed

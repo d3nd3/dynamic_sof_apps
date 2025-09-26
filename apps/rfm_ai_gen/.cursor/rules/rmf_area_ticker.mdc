@@ -1,0 +1,8 @@
+---
+description: RMF area <ticker text> scrolling text area (width of page by default)
+---
+
+### Options
+- `speed <value>` — scroll speed (higher = faster).
+- `delay <value>` — time before starting (for animations to finish).
+

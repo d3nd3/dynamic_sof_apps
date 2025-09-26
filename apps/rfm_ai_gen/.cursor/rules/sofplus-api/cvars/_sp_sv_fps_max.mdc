@@ -1,0 +1,15 @@
+---
+description: _sp_sv_fps_max - Maximum framerate allowed (set it a bit higher than the required limit). Clients with a framerate above the limit will see a warning message. If their framerate stays too high, they will eventually be kicked.
+alwaysApply: false
+---
+
+### _sp_sv_fps_max
+
+_sp_sv_fps_max
+
+Maximum framerate allowed (set it a bit higher than the required limit). Clients with a framerate above the limit will see a warning message. If their framerate stays too high, they will eventually be kicked.
+
+Values:
+
+- 0: No limit (default)
+- >0: Use this limit

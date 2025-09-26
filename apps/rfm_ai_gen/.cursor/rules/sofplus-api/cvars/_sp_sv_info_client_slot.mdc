@@ -1,0 +1,10 @@
+---
+description: _sp_sv_info_client_slot - Is set to the clients slot when the sp_sv_info_client command is executed
+alwaysApply: false
+---
+
+### _sp_sv_info_client_slot
+
+_sp_sv_info_client_slot
+
+Is set to the clients slot when the sp_sv_info_client command is executed

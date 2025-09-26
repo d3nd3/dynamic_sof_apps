@@ -1,0 +1,20 @@
+---
+description: dot_vote_gametype - .vote gametype
+alwaysApply: false
+---
+
+### dot_vote_gametype
+
+.vote gametype
+
+Start a vote to change the gametype
+
+Synopsis:
+
+```txt
+.vote gametype
+GAMETYPE
+```
+Parameters:
+
+- GAMETYPE:

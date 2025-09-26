@@ -1,0 +1,23 @@
+---
+description: sp_sc_on_change - Create an on_change event handler
+alwaysApply: false
+---
+
+### sp_sc_on_change
+
+sp_sc_on_change
+
+Create an on_change event handler
+
+Synopsis:
+
+```txt
+sp_sc_on_change
+NAME
+
+FUNCTION
+```
+Parameters:
+
+- NAME:
+- FUNCTION:

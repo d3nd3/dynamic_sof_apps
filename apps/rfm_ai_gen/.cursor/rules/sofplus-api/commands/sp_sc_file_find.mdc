@@ -1,0 +1,29 @@
+---
+description: sp_sc_file_find - Find files
+alwaysApply: false
+---
+
+### sp_sc_file_find
+
+sp_sc_file_find
+
+Find files
+
+Synopsis:
+
+```txt
+sp_sc_file_find
+DST CVAR
+
+PATTERN
+
+OPTION...
+```
+Parameters:
+
+- DST CVAR:
+- DST CVAR: _0`: Number of files found
+- DST CVAR: _1`: First filename
+- DST CVAR: _n`: Filename n
+- PATTERN:
+- OPTION:

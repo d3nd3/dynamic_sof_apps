@@ -1,0 +1,68 @@
+---
+description: _sp_sv_weapon_primary_type - When a player spawns, this weapon will be selected.
+alwaysApply: false
+---
+
+### _sp_sv_weapon_primary_type
+
+_sp_sv_weapon_primary_type
+
+When a player spawns, this weapon will be selected.
+
+Values:
+
+-1
+
+Unchanged (default, pistol)
+
+0
+
+No primary weapon
+
+1
+
+Knife
+
+2
+
+Pistol
+
+3
+
+Magnum
+
+4
+
+Shotgun
+
+5
+
+Sniper rifle
+
+6
+
+Silenced SMG
+
+7
+
+SMG
+
+8
+
+Machinegun
+
+9
+
+Slugthrower
+
+10
+
+Rocket launcher
+
+11
+
+Flamethrower
+
+12
+
+MPG

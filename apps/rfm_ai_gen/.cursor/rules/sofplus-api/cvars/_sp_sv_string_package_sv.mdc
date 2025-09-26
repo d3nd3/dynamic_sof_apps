@@ -1,0 +1,15 @@
+---
+description: _sp_sv_string_package_sv - Filename of string package. This string package is used by the SoFplus DLL.
+alwaysApply: false
+---
+
+### _sp_sv_string_package_sv
+
+_sp_sv_string_package_sv
+
+Filename of string package. This string package is used by the SoFplus DLL.
+
+Values:
+
+- Empty: String package disabled
+- Not empty: String package enabled

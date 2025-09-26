@@ -1,0 +1,21 @@
+---
+description: sp_sv_sound_broadcast - Play a sound file for all clients
+alwaysApply: false
+---
+
+### sp_sv_sound_broadcast
+
+sp_sv_sound_broadcast
+
+Play a sound file for all clients
+
+Synopsis:
+
+```txt
+sp_sv_sound_broadcast
+SOUND FILE INDEX
+```
+Parameters:
+
+- SOUND FILE INDEX:
+- SOUND FILE INDEX: `.

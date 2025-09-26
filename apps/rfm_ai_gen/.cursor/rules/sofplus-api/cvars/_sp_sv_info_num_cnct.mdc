@@ -1,0 +1,10 @@
+---
+description: _sp_sv_info_num_cnct - Is set to the number of connecting clients
+alwaysApply: false
+---
+
+### _sp_sv_info_num_cnct
+
+_sp_sv_info_num_cnct
+
+Is set to the number of connecting clients

@@ -1,0 +1,10 @@
+---
+description: RMF area <loadbox> savegame list with images, titles, dates (auto layout)
+---
+
+### Options
+- `backfill <colour>` — background fill colour.
+- `sort <name|rname|size|rsize|time|rtime>` — sort order (default rtime).
+- `saving` — used for saving; hide autosave; only in-game.
+- `spacing <value>` — pixel spacing around each save image.
+

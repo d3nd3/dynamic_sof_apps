@@ -1,0 +1,10 @@
+---
+description: _sp_sv_info_client_ppm_best - Is set to the clients best number of points per minute when the sp_sv_info_client command is executed
+alwaysApply: false
+---
+
+### _sp_sv_info_client_ppm_best
+
+_sp_sv_info_client_ppm_best
+
+Is set to the clients best number of points per minute when the sp_sv_info_client command is executed

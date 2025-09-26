@@ -1,0 +1,12 @@
+---
+description: RMF control element <comment text> to insert a non-parsed comment
+---
+
+### Purpose
+Add comments into RMF pages; ignored by the parser.
+
+### Example
+```text
+<comment This is a section header>
+```
+

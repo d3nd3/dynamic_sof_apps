@@ -1,0 +1,10 @@
+---
+description: _sp_cl_fps_debuggraph_shift - FPS graph shift upwards (default = 0). See also cl_showfps.
+alwaysApply: false
+---
+
+### _sp_cl_fps_debuggraph_shift
+
+_sp_cl_fps_debuggraph_shift
+
+FPS graph shift upwards (default = 0). See also cl_showfps.

@@ -1,0 +1,20 @@
+---
+description: _sp_sv_weapon_secondary_ammo - Amount of ammo for the secondary weapon.
+alwaysApply: false
+---
+
+### _sp_sv_weapon_secondary_ammo
+
+_sp_sv_weapon_secondary_ammo
+
+Amount of ammo for the secondary weapon.
+
+Values:
+
+-1
+
+Unchanged (default)
+
+0 .. 255
+
+Amount of ammo. SoF maximum ammo limits still apply. For knives this limit is 6 and for other weapons there's a limit too.

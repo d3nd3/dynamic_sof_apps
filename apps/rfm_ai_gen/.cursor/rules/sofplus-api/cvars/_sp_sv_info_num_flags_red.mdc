@@ -1,0 +1,10 @@
+---
+description: _sp_sv_info_num_flags_red - Is set to the number of captured flags for the red team
+alwaysApply: false
+---
+
+### _sp_sv_info_num_flags_red
+
+_sp_sv_info_num_flags_red
+
+Is set to the number of captured flags for the red team

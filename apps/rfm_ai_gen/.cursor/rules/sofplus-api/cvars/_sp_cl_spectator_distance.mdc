@@ -1,0 +1,15 @@
+---
+description: _sp_cl_spectator_distance - Set the `r_nearclipdist` variable to this value when in 1st person spectator mode (spectator variable is `2` or `4`).
+alwaysApply: false
+---
+
+### _sp_cl_spectator_distance
+
+_sp_cl_spectator_distance
+
+Set the `r_nearclipdist` variable to this value when in 1st person spectator mode (spectator variable is `2` or `4`).
+
+Values:
+
+- 0: Disable
+- >0: Enable; Set `r_nearclipdist` to this value. `20` .. `30` seems to work reasonably well (default = 20).

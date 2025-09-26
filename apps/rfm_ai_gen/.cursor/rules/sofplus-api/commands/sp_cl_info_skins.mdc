@@ -1,0 +1,34 @@
+---
+description: sp_cl_info_skins - Write info to `_sp_cl_info_*` cvars
+alwaysApply: false
+---
+
+### sp_cl_info_skins
+
+sp_cl_info_skins
+
+Write info to `_sp_cl_info_*` cvars
+
+A list of all player info (same data as produced by the `skins` command)
+
+_sp_cl_info_skins_name_*
+
+_sp_cl_info_skins_team_*
+
+_sp_cl_info_skins_skin_*
+
+_sp_cl_info_skins_red_blue_*
+
+Synopsis:
+
+```txt
+sp_cl_info_skins`
+`sp_cl_info_skins
+```
+
+Example:
+
+```txt
+]sp_cl_info_skins`
+`]sp_cl_info_skins
+```

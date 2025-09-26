@@ -1,0 +1,23 @@
+---
+description: sp_sv_info_client_mod - Get client MOD (Means Of Death) information and put it in the `_sp_sv_info_client_mod_*` variables
+alwaysApply: false
+---
+
+### sp_sv_info_client_mod
+
+sp_sv_info_client_mod
+
+Get client MOD (Means Of Death) information and put it in the `_sp_sv_info_client_mod_*` variables
+
+Synopsis:
+
+```txt
+sp_sv_info_client_mod
+SLOT
+
+MOD
+```
+Parameters:
+
+- SLOT:
+- MOD:

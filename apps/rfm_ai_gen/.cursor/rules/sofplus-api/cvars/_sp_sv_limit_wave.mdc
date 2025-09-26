@@ -1,0 +1,15 @@
+---
+description: _sp_sv_limit_wave - Limit number of wave commands a player can issue. Clients who wave too often will see a warning message and new wave commands will be ignored.
+alwaysApply: false
+---
+
+### _sp_sv_limit_wave
+
+_sp_sv_limit_wave
+
+Limit number of wave commands a player can issue. Clients who wave too often will see a warning message and new wave commands will be ignored.
+
+Values:
+
+- 0: No limit (default)
+- 1: Limit

@@ -1,0 +1,7 @@
+---
+description: RMF area <gpm skinCvar teamCvar> cycle player model description files
+---
+
+### Options
+- `Cvar2 <cvar>` — console variable to store team icon name.
+

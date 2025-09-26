@@ -1,0 +1,17 @@
+---
+description: s_khz - Sound dma speed
+alwaysApply: false
+---
+
+### s_khz
+
+s_khz
+
+Sound dma speed
+
+Values:
+
+- 11: 11 kHz (11025)
+- 22: 22 kHz (22050)
+- 44: 44 kHz (44100). Only available when using defsnd.dll
+- 48: 48 kHz (48000). Only available when using defsnd.dll

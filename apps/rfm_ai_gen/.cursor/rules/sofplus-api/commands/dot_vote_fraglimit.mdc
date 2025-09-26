@@ -1,0 +1,20 @@
+---
+description: dot_vote_fraglimit - .vote fraglimit
+alwaysApply: false
+---
+
+### dot_vote_fraglimit
+
+.vote fraglimit
+
+Start a vote to change the fraglimit
+
+Synopsis:
+
+```txt
+.vote fraglimit
+FRAGLIMIT
+```
+Parameters:
+
+- FRAGLIMIT:

@@ -1,0 +1,23 @@
+---
+description: sp_sc_cvar_copy - Copy cvar(s)
+alwaysApply: false
+---
+
+### sp_sc_cvar_copy
+
+sp_sc_cvar_copy
+
+Copy cvar(s)
+
+Synopsis:
+
+```txt
+sp_sc_cvar_copy
+DST CVAR
+
+SRC CVAR...
+```
+Parameters:
+
+- DST CVAR:
+- SRC CVAR...:

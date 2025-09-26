@@ -1,0 +1,10 @@
+---
+description: winstart - The winstart command has been disabled by default. To enable it, add `+set`_sp_sc_enable_winstart`1` to the commandline.
+alwaysApply: false
+---
+
+### winstart
+
+winstart
+
+The winstart command has been disabled by default. To enable it, add `+set`_sp_sc_enable_winstart`1` to the commandline.

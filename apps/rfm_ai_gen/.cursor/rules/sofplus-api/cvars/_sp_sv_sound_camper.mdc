@@ -1,0 +1,10 @@
+---
+description: _sp_sv_sound_camper - The variable can point to a custom sound file that will be played on the clients when a camper is detected
+alwaysApply: false
+---
+
+### _sp_sv_sound_camper
+
+_sp_sv_sound_camper
+
+The variable can point to a custom sound file that will be played on the clients when a camper is detected

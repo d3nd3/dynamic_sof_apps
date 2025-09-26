@@ -1,0 +1,15 @@
+---
+description: _sp_sv_health_regeneration_time - Number of seconds it takes to regenerate health from 0% to 100%
+alwaysApply: false
+---
+
+### _sp_sv_health_regeneration_time
+
+_sp_sv_health_regeneration_time
+
+Number of seconds it takes to regenerate health from 0% to 100%
+
+Values:
+
+- 0: No health regeneration (default)
+- >0.0: Use this amount of time

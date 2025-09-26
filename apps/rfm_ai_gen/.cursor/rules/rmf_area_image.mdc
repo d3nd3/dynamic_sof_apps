@@ -1,0 +1,14 @@
+---
+description: RMF area <image image> image area, size of the asset; supports options
+---
+
+### Options
+- `abs <x> <y>` — absolute position (bypass auto layout).
+- `alt <image>` — highlight image, scaled to original.
+- `hflip` / `vflip` — flip horizontally/vertically.
+- `text <text> <xoff> <yoff>` — overlay static text.
+- `cvartext <cvar> <xoff> <yoff>` — overlay text from cvar.
+- `scale <value>` — scale both dimensions.
+- `transient` — reupload when gamma/brightness changes.
+- `setimage <cvar>` — image name from cvar.
+

@@ -1,0 +1,18 @@
+---
+description: _sp_cl_print - Print packet parsing. When enabled, print packets will be parsed and corresponding `_sp_cl_print_*` variables will be set.
+alwaysApply: false
+---
+
+### _sp_cl_print
+
+_sp_cl_print
+
+Print packet parsing. When enabled, print packets will be parsed and corresponding `_sp_cl_print_*` variables will be set.
+
+Values:
+
+- 0: Disable parsing; Always print packet (default)
+- 1: Enable parsing; Always print packet
+- 2: Enable parsing; Print unparsed packet (not a result of `rcon status` or `rcon
+- CVAR NAME: `)
+- 3: Enable parsing; Don't print packet

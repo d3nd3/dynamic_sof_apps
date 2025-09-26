@@ -1,0 +1,24 @@
+---
+description: sp_sc_info_net_reset - Reset the network traffic counters
+alwaysApply: false
+---
+
+### sp_sc_info_net_reset
+
+sp_sc_info_net_reset
+
+Reset the network traffic counters
+
+Synopsis:
+
+```txt
+sp_sc_info_net_reset`
+`sp_sc_info_net_reset
+```
+
+Example:
+
+```txt
+]sp_sc_info_net_reset`
+`]sp_sc_info_net_reset
+```

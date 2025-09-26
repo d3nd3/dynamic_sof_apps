@@ -1,0 +1,24 @@
+---
+description: dot_vote_info - .vote info
+alwaysApply: false
+---
+
+### dot_vote_info
+
+.vote info
+
+Request vote info into the `_sp_cl_sv_0` .. `_sp_cl_sv_4` variables
+
+Synopsis:
+
+```txt
+.vote kick`
+`.vote kick
+```
+
+Example:
+
+```txt
+].vote info`
+`].vote info
+```

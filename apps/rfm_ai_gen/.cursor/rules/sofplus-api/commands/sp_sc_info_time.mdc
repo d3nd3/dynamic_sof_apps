@@ -1,0 +1,24 @@
+---
+description: sp_sc_info_time - Update the `_sp_sc_info_time_*` cvars
+alwaysApply: false
+---
+
+### sp_sc_info_time
+
+sp_sc_info_time
+
+Update the `_sp_sc_info_time_*` cvars
+
+Synopsis:
+
+```txt
+sp_sc_info_time`
+`sp_sc_info_time
+```
+
+Example:
+
+```txt
+]sp_sc_info_time`
+`]sp_sc_info_time
+```

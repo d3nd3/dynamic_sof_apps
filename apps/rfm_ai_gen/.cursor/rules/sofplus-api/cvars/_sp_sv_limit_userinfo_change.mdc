@@ -1,0 +1,15 @@
+---
+description: _sp_sv_limit_userinfo_change - Limit number of userinfo changes (name, skin, rate, ...). Clients who change their userinfo too often will see a warning message and new changes will be ignored.
+alwaysApply: false
+---
+
+### _sp_sv_limit_userinfo_change
+
+_sp_sv_limit_userinfo_change
+
+Limit number of userinfo changes (name, skin, rate, ...). Clients who change their userinfo too often will see a warning message and new changes will be ignored.
+
+Values:
+
+- 0: No limit (default)
+- 1: Limit

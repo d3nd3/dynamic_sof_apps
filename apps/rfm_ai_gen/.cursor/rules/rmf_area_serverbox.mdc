@@ -1,0 +1,10 @@
+---
+description: RMF area <serverbox> server list with sortable columns and selection cvars
+---
+
+### Options
+- `column <index> <name>` — columns for host(0), map(1), players(2), type(3), ping(4).
+- `dmnames <list>` — map game type numbers to names.
+- `hostname <cvar>` — cvar for selected host name.
+- `address <cvar>` — cvar for selected server address.
+

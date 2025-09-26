@@ -1,0 +1,15 @@
+---
+description: _sp_sv_vote_type_map_end - Vote for next map at the end of the current map disable/enable
+alwaysApply: false
+---
+
+### _sp_sv_vote_type_map_end
+
+_sp_sv_vote_type_map_end
+
+Vote for next map at the end of the current map disable/enable
+
+Values:
+
+- 0: Disable
+- 1: Enable (default)

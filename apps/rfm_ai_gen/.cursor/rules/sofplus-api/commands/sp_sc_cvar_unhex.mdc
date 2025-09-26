@@ -1,0 +1,25 @@
+---
+description: sp_sc_cvar_unhex - Convert a hexadecimal string to a character string
+alwaysApply: false
+---
+
+### sp_sc_cvar_unhex
+
+sp_sc_cvar_unhex
+
+Convert a hexadecimal string to a character string
+
+Replace hh hex codes by their character representation
+
+Synopsis:
+
+```txt
+sp_sc_cvar_unhex
+DST CVAR
+
+SRC CVAR
+```
+Parameters:
+
+- DST CVAR:
+- SRC CVAR:

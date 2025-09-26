@@ -1,0 +1,10 @@
+---
+description: _sp_cl_info_slot - Is set to the current connection slot
+alwaysApply: false
+---
+
+### _sp_cl_info_slot
+
+_sp_cl_info_slot
+
+Is set to the current connection slot

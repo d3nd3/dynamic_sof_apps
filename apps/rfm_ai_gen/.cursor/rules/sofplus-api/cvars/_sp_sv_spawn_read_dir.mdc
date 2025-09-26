@@ -1,0 +1,19 @@
+---
+description: _sp_sv_spawn_read_dir - Directory to read map spawn info from. SoF will try reading from `user/sofplus/sv/spawn/
+alwaysApply: false
+---
+
+### _sp_sv_spawn_read_dir
+
+_sp_sv_spawn_read_dir
+
+Directory to read map spawn info from. SoF will try reading from `user/sofplus/sv/spawn/
+READ DIR
+/
+MAPNAME
+.txt`. Note that the slash in map names stays in the pathname too.
+
+Values:
+
+- Empty: Don't read map spawn info (default)
+- Not empty: Try reading map spawn info
